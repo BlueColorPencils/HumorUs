@@ -1,0 +1,3 @@
+rootProject.name = 'HumorUs'
+
+include ':app'
