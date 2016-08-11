@@ -53,7 +53,11 @@ var Launch = React.createClass({
   render: function() {
     return (
       <View style={styles.container}>
-        <Image style={styles.bg} source={{uri: 'http://i.imgur.com/xlQ56UK.jpg'}} />
+        <Image style={styles.bg} source={{uri: 'https://scontent-sea1-1.xx.fbcdn.net/t31.0-8/13323231_10207167534975001_2138488519942298615_o.jpg'}} />
+
+        <View style={styles.message}>
+          <Text style={styles.messageFont}>Find your troll mate.</Text>
+        </View>
 
         <View style={styles.header}>
             <Image style={styles.mark} source={{uri: 'http://i.imgur.com/da4G0Io.png'}} />
@@ -76,10 +80,20 @@ var styles = StyleSheet.create({
       flex: 1,
       backgroundColor: 'transparent'
     },
+    message: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      top: 30
+    },
+    messageFont: {
+      color: '#FFF',
+      fontSize: 20
+    },
     bg: {
         position: 'absolute',
-        left: 0,
-        top: 0,
+        // marginLeft: 10,
+        // top: 0,
+        bottom: 0,
         width: windowSize.width,
         height: windowSize.height
     },
@@ -91,7 +105,8 @@ var styles = StyleSheet.create({
     },
     mark: {
         width: 150,
-        height: 150
+        height: 150,
+        bottom: 70
     },
     signin: {
         bottom: 20,
@@ -143,7 +158,7 @@ var styles = StyleSheet.create({
       padding: 15,
     },
     greyFont: {
-      color: '#D8D8D8',
+      color: '#FFF',
       fontSize: 10
     },
     whiteFont: {
