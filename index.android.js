@@ -62,14 +62,14 @@ class test_proj extends Component {
           <Scene key="register" component={Register} title="Register"/>
           <Scene key="register2" component={Register} title="Register2" duration={1}/>
           <Scene key="home" component={Home} title="Replace" type={ActionConst.REPLACE}/>
-          <Scene key="launch" component={Launch} title="Launch" style={{flex:1, backgroundColor:'transparent'}} initial={true}/>
+          <Scene key="launch" component={Launch} title="Launch" style={{flex:1, backgroundColor:'transparent'}} initial={true} />
           <Scene key="login" direction="vertical">
               <Scene key="loginModal" component={Login} schema="modal" title="Login"  hideNavBar={false}/>
               <Scene key="loginModal2" hideNavBar={true} component={Login2} title="Login2"/>
           </Scene>
 
           <Scene key="tabbar" tabs={true} >
-              <Scene key="tab1"  title="Tab #1" icon={TabIcon} navigationBarStyle={{backgroundColor:'red'}} titleStyle={{color:'white'}}>
+              <Scene key="tab1"  title="Tab #1" icon={TabIcon} navigationBarStyle={{backgroundColor:'black'}} titleStyle={{color:'white'}}>
                   <Scene key="tab1_1" component={TabView} title="Tab #1_1" onRight={()=>alert("Right button")} rightTitle="Right" />
                   <Scene key="tab1_2" component={TabView} title="Tab #1_2" titleStyle={{color:'black'}}/>
               </Scene>
