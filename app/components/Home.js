@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet} from "react-native";
+import {View, Text, StyleSheet, ToolbarAndroid} from "react-native";
 import Button from "react-native-button";
 import {Actions} from "react-native-router-flux";
 import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
@@ -36,6 +36,12 @@ class Home extends React.Component {
         var _this = this;
         return (
           <View style={styles.container}>
+          <ToolbarAndroid
+            style={styles.nav}
+            title="AwesomeApp"
+            actions={[{title: 'TOOLBAR', show: 'always'}]}
+            onActionSelected={this.onActionSelected} />
+
             <View style={styles.innercontainer}>
                 <Text>MAIN SCREEN</Text>
             </View>
@@ -51,5 +57,14 @@ class Home extends React.Component {
     }
 }
 
+
+
+var styles = StyleSheet.create({
+    nav: {
+      padding: 40,
+      flex: 1
+
+    }
+  })
 
 module.exports = Home;
