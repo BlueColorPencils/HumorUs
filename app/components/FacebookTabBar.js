@@ -3,7 +3,9 @@ import {
   StyleSheet,
   Text,
   View,
+  Alert,
   TouchableOpacity,
+  AsyncStorage,
 } from 'react-native';
 // import Icon from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -11,10 +13,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 const FacebookTabBar = React.createClass({
   tabIcons: [],
 
+
   propTypes: {
     goToPage: React.PropTypes.func,
     activeTab: React.PropTypes.number,
     tabs: React.PropTypes.array,
+    numi: React.PropTypes.number,
   },
 
   componentDidMount() {
@@ -46,10 +50,57 @@ const FacebookTabBar = React.createClass({
     //
   },
 
+
   render() {
     return <View style={[styles.tabs, this.props.style, ]}>
       {this.props.tabs.map((tab, i) => {
-        return <TouchableOpacity key={tab} onPress={() => this.props.goToPage(i)} style={styles.tab}>
+        return <TouchableOpacity key={tab} onPress=
+        { () =>
+          {this.props.goToPage(i)
+      //     if (i=== 0) {
+      //       fetch("http://172.24.128.164:3000/api/user/tttttt/unseen", {method: "GET"})
+      //       .then((response) => response.json())
+      //       .then((responseData) => {
+      //
+      //         Alert.alert(
+      //           "GET Response",
+      //           "Search Query -> " + JSON.stringify(responseData)
+      //         )
+      //       })
+      //       .done();
+      //       this.props.goToPage(i)
+      //
+      //   }
+      //   else  if (i === 1){
+      //     fetch("http://172.24.128.164:3000/api/user/tttttt/matches", {method: "GET"})
+      //     .then((response) => response.json())
+      //     .then((responseData) => {
+      //       //  AsyncStorage.setItem("myKey", responseData);
+      //       //   this.setState({"myKey": JSON.stringify(responseData)});
+      //       //   <Text>"WAT"</Text>
+      //         Alert.alert(
+      //           "GET Response",
+      //           "Search Query -> " + JSON.stringify(responseData)
+      //         )
+      //     })
+      //     .done();
+      //     this.props.goToPage(i)
+      //   }
+      //   else  if (i === 2){
+      //     fetch("http://172.24.128.164:3000/api/user/tttttt/", {method: "GET"})
+      //     .then((response) => response.json())
+      //     .then((responseData) => {
+      //         Alert.alert(
+      //           "GET Response",
+      //           "Search Query -> " + JSON.stringify(responseData)
+      //         )
+      //     })
+      //     .done();
+      //     this.props.goToPage(i)
+      // }
+    }
+
+        } style={styles.tab} >
           <Icon
             name={tab}
             size={38}

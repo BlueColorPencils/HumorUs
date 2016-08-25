@@ -1,5 +1,5 @@
 const rootUrl = 'https://localhost:3000'
-const apiKey = 'b6273a59708a717'
+const apiKey = ''
 module.exports = {
   get () {
     return fetch(rootUrl, {
