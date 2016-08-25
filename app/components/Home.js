@@ -12,15 +12,23 @@ import {
   AsyncStorage,
 } from 'react-native';
 
+import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
 
+import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
+import FacebookTabBar from './NavigatorTabBar';
+import Icon from 'react-native-vector-icons/Ionicons';
 import SwipeCards from 'react-native-swipe-cards';
+
+
+var Dimensions = require('Dimensions');
+var windowSize = Dimensions.get('window');
 
 let Card = React.createClass({
   render() {
     return (
       <View style={styles.card}>
+        <Text style={styles.text}>{this.props.name}</Text>
         <Image style={styles.thumbnail} source={{uri: this.props.image}} />
-        <Text style={styles.text}>This is card {this.props.name}</Text>
       </View>
     )
   }
@@ -36,222 +44,199 @@ let NoMoreCards = React.createClass({
   }
 })
 
-const Cards = [
-  {name: this.state.title, image: this.state.image}
-]
 
 export default React.createClass({
-  getInitialState() {
-    return {
-      cards: Cards,
-      outOfCards: false
-    }
-  },
-  handleYup (card) {
-    console.log("yup")
-  },
-  handleNope (card) {
-    console.log("nope")
-  },
-  cardRemoved (index) {
-    console.log(`The index is ${index}`);
 
-    let CARD_REFRESH_LIMIT = 3
+     getInitialState: function() {
+        return {myKey:'Loading',
+        cards: {},
+        imgurID: '',
+        outOfCards: false};
+    },
 
-    if (this.state.cards.length - index <= CARD_REFRESH_LIMIT + 1) {
+    componentWillMount: function() {
+      this.getPictureData()
+    },
 
-      if (!this.state.outOfCards) {
-        // console.log(`Adding ${Cards2.length} more cards`)
+    getPictureData: function() {
+      fetch("http://192.168.43.88:3000/api/user/11111111/unseen", {method: "GET"})
+      .then((response) => response.json())
+      .then((responseData) => {
+          this.setState({"cards": [{name: responseData.title, image: responseData.link}]});
+          this.setState({"imgurID": responseData.imgurID})
+      })
+      .done();
+    },
 
-        this.setState({
-          cards: this.state.cards.concat(Cards2),
-          outOfCards: true
+    likePicture: function() {
+      fetch("http://192.168.43.88:3000/api/picture/newpictures", {
+        method: "POST",
+        headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fbID: "11111111",
+          imgurID: this.state.imgurID,
+          relationship: "LIKES",
         })
-      }
+      })
+      .done();
+    },
+    dislikePicture: function() {
+      fetch("http://192.168.43.88:3000/api/picture/newpictures", {
+        method: "POST",
+        headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fbID: "11111111",
+          imgurID: this.state.imgurID,
+          relationship: "DISLIKES",
+        })
+      })
+      .done();
+    },
 
-    }
-
+    handleYup (card) {
+      this.likePicture()
+      this.getPictureData()
+    },
+    handleNope (card) {
+      this.dislikePicture()
+      this.getPictureData()
+    },
+    cardRemoved (index) {
   },
+
+
+
+
+
   render() {
-    return (
-      <SwipeCards
-        cards={this.state.cards}
-        loop={false}
 
-        renderCard={(cardData) => <Card {...cardData} />}
-        renderNoMoreCards={() => <NoMoreCards />}
-        showYup={true}
-        showNope={true}
+    const IMAGE_PREFETCH_URL = this.state.image
 
-        handleYup={this.handleYup}
-        handleNope={this.handleNope}
-        cardRemoved={this.cardRemoved}
-      />
-    )
-  }
-})
+    return <ScrollableTabView
+      style={styles.container}
+      renderTabBar={()=><FacebookTabBar backgroundColor='rgba(200, 200, 200, 0.43)' />}
+      tabBarPosition='overlayTop'
+    >
+
+      <ScrollView tabLabel="photo">
+        <SwipeCards
+          cards={this.state.cards}
+          loop={false}
+
+          renderCard={(cardData) => <Card {...cardData} />}
+          renderNoMoreCards={() => <NoMoreCards />}
+          showYup={true}
+          showNope={true}
+
+          getPictureData={this.getPictureData}
+          handleYup={this.handleYup}
+          handleNope={this.handleNope}
+          cardRemoved={this.cardRemoved}
+        />
+      </ScrollView>
+
+      <ScrollView tabLabel="forum">
+        <View style={styles.innercontainer}>
+        <Text>HELLOOO</Text>
+          <Icon name='logo-android' color='#A4C639' size={300} style={styles.icon} />
+          <Icon name='logo-android' color='black' size={300} style={styles.icon} />
+
+        </View>
+      </ScrollView>
+
+
+      <ScrollView tabLabel="account-box">
+      <View style={styles.innercontainer}>
+        <FBLogin />
+        </View>
+      </ScrollView>
+
+
+    </ScrollableTabView>;
+  },
+});
+
 
 const styles = StyleSheet.create({
-  card: {
+  container: {
+    // marginTop: 30,
+  },
+  icon: {
+    width: 300,
+    height: 300,
+    alignSelf: 'center',
+  },
+  innercontainer: {
+    marginTop: 70,
+    flex: 1,
+    height: windowSize.height,
     alignItems: 'center',
-    borderRadius: 5,
+    backgroundColor: 'rgba(200, 200, 200, 0.43)',
+    // alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textcontainer: {
+    // flex: 1,
+    marginTop: 10,
+    marginLeft: 2,
+    marginRight: 2,
+    fontSize: 15,
+    fontWeight: '500',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  picturecontainer: {
+    flex:1,
+    marginTop: 10,
+    // position: 'absolute',
+    bottom: 0,
+    // width: windowSize.width-20,
+    // height: windowSize.height-150
+  },
+  card: {
+    marginTop: 80,
+    marginLeft: 10,
+    marginRight: 10,
+    paddingTop: 10,
+    marginBottom: 10,
+    alignItems: 'center',
+    borderRadius: 7,
     overflow: 'hidden',
-    borderColor: 'grey',
-    backgroundColor: 'white',
-    borderWidth: 1,
+    borderColor: 'rgb(144, 144, 144)',
+    backgroundColor: 'rgb(255, 255, 255)',
+    borderWidth: 2,
     elevation: 1,
+    width: windowSize.width-20,
+    height: windowSize.height-115
   },
   thumbnail: {
     flex: 1,
-    width: 300,
-    height: 300,
+    // marginLeft: 50,
+    width: windowSize.width-24,
+    height: 100,
   },
   text: {
-    fontSize: 20,
-    paddingTop: 10,
-    paddingBottom: 10
+    fontSize: 17,
+    fontFamily: 'sans-serif-condensed',
+    fontWeight: '400',
+    color: 'rgb(50, 50, 50)',
+    paddingTop: 0,
+    paddingLeft: 10,
+    paddingBottom: 10,
+    // textAlign: 'center',
   },
   noMoreCards: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   }
-})
-
-
-
-// import React from 'react';
-// import {
-//   StyleSheet,
-//   ScrollView,
-//   Text,
-//   TouchableHighlight,
-//   Alert,
-//   View,
-//   Image,
-//   AsyncStorage,
-// } from 'react-native';
-//
-// import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
-//
-// import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
-// import FacebookTabBar from './FacebookTabBar';
-// import Icon from 'react-native-vector-icons/Ionicons';
-//
-// var Dimensions = require('Dimensions');
-// var windowSize = Dimensions.get('window');
-//
-// // Using tabBarPosition='overlayTop' or 'overlayBottom' lets the content show through a
-// // semitransparent tab bar. Note that if you build a custom tab bar component, its outer container
-// // must consume a 'style' prop (e.g. <View style={this.props.style}) to support this feature.
-// export default React.createClass({
-//
-//      getInitialState: function() {
-//         return {myKey:'Loading'};
-//     },
-//
-//     componentWillMount: function() {
-//       this.getPictureData()
-//     },
-//
-//     getPictureData: function() {
-//       fetch("http://192.168.43.88:3000/api/user/11111111/unseen", {method: "GET"})
-//       .then((response) => response.json())
-//       .then((responseData) => {
-//          AsyncStorage.setItem("myKey", responseData);
-//           this.setState({"title": responseData.title});
-//           this.setState({"image": responseData.link});
-//       })
-//       .done();
-//     },
-//
-//     // getMatchData: function() {
-//     //   fetch("http://172.24.128.164:3000/api/user/tttttt/unseen", {method: "GET"})
-//     //   .then((response) => response.json())
-//     //   .then((responseData) => {
-//     //      AsyncStorage.setItem("myKey", responseData);
-//     //       this.setState({"myKey": responseData.title});
-//     //   })
-//     //   .done();
-//     // },
-//     //
-//
-//   render() {
-//
-//     const IMAGE_PREFETCH_URL = this.state.image
-//
-//     return <ScrollableTabView
-//       style={styles.container}
-//       renderTabBar={()=><FacebookTabBar backgroundColor='rgba(255, 255, 255, 0.7)' />}
-//       tabBarPosition='overlayTop'
-//     >
-//
-//       <ScrollView tabLabel="photo">
-//         <View style={styles.innercontainer}>
-//           <Text style={styles.textcontainer}>{this.state.title}</Text>
-//           <Image style={styles.picturecontainer} source={{uri: IMAGE_PREFETCH_URL}} />
-//         </View>
-//       </ScrollView>
-//
-//       <ScrollView tabLabel="forum">
-//         <View style={styles.innercontainer}>
-//         <Text>HELLOOO</Text>
-//           <Icon name='logo-android' color='#A4C639' size={300} style={styles.icon} />
-//           <Icon name='logo-android' color='black' size={300} style={styles.icon} />
-//
-//         </View>
-//       </ScrollView>
-//
-//
-//       <ScrollView tabLabel="account-box">
-//       <View style={styles.innercontainer}>
-//         <FBLogin />
-//         </View>
-//       </ScrollView>
-//
-//
-//     </ScrollableTabView>;
-//   },
-// });
-//
-// const styles = StyleSheet.create({
-//   container: {
-//     // marginTop: 30,
-//   },
-//   icon: {
-//     width: 300,
-//     height: 300,
-//     alignSelf: 'center',
-//   },
-//   innercontainer: {
-//     marginTop: 70,
-//     flex: 1,
-//     height: windowSize.height,
-//     alignItems: 'center',
-//     backgroundColor: 'rgba(200, 200, 200, 0.43)',
-//     // alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//   textcontainer: {
-//     // flex: 1,
-//     marginTop: 10,
-//     marginLeft: 2,
-//     marginRight: 2,
-//     fontSize: 15,
-//     fontWeight: '500',
-//     alignItems: 'center',
-//     textAlign: 'center',
-//
-//   },
-//     picturecontainer: {
-//    flex:1,
-//     marginTop: 10,
-//     // position: 'absolute',
-//     bottom: 0,
-//     width: windowSize.width-20,
-//     height: windowSize.height-150
-//     },
-// });
+});
 
 
 

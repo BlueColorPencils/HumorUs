@@ -42,7 +42,7 @@ const FacebookTabBar = React.createClass({
     // const green = 17 + (250 - 89) * progress;
     // const blue = 131 + (250 - 152) * progress;
     // return `rgb(${red}, ${green}, ${blue})`;
-    const red = 255 + (250-280) * progress;
+    const red = 255 + (250-290) * progress;
     const green = 17 + (250-20) * progress;
     const blue = 131 + (250-120) * progress;
     return `rgb(${red}, ${green}, ${blue})`;
@@ -128,7 +128,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
     borderLeftWidth: 0,
     borderRightWidth: 0,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: 'white',
+    borderBottomColor: 'rgba(0,0,0,0.4)',
   },
 });
 
