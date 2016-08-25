@@ -25,10 +25,11 @@ var windowSize = Dimensions.get('window');
 
 let Card = React.createClass({
   render() {
+    const IMAGE_URL = this.props.image
     return (
       <View style={styles.card}>
         <Text style={styles.text}>{this.props.name}</Text>
-        <Image style={styles.thumbnail} source={{uri: this.props.image}} />
+        <Image style={styles.thumbnail} source={{uri:IMAGE_URL}} />
       </View>
     )
   }
@@ -59,7 +60,7 @@ export default React.createClass({
     },
 
     getPictureData: function() {
-      fetch("http://192.168.43.88:3000/api/user/11111111/unseen", {method: "GET"})
+      fetch("http://172.24.128.164:3000/api/user/11111111/unseen", {method: "GET"})
       .then((response) => response.json())
       .then((responseData) => {
           this.setState({"cards": [{name: responseData.title, image: responseData.link}]});
@@ -69,7 +70,7 @@ export default React.createClass({
     },
 
     likePicture: function() {
-      fetch("http://192.168.43.88:3000/api/picture/newpictures", {
+      fetch("http://172.24.128.164:3000/api/picture/newpictures", {
         method: "POST",
         headers: {
         'Accept': 'application/json',
@@ -84,7 +85,7 @@ export default React.createClass({
       .done();
     },
     dislikePicture: function() {
-      fetch("http://192.168.43.88:3000/api/picture/newpictures", {
+      fetch("http://172.24.128.164:3000/api/picture/newpictures", {
         method: "POST",
         headers: {
         'Accept': 'application/json',
@@ -116,7 +117,7 @@ export default React.createClass({
 
   render() {
 
-    const IMAGE_PREFETCH_URL = this.state.image
+    // const IMAGE_PREFETCH_URL = this.state.image
 
     return <ScrollableTabView
       style={styles.container}
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   innercontainer: {
-    marginTop: 70,
+    // marginTop: 70,
     flex: 1,
     height: windowSize.height,
     alignItems: 'center',
@@ -213,13 +214,18 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     elevation: 1,
     width: windowSize.width-20,
-    height: windowSize.height-115
+    // height: windowSize.height-115
   },
   thumbnail: {
     flex: 1,
+    // width: 50,
+    // height: 50
     // marginLeft: 50,
-    width: windowSize.width-24,
-    height: 100,
+    width: windowSize.width-50,
+    height: windowSize.height,
+    // position: 'relative',
+    // top: 0,
+    // left: 0
   },
   text: {
     fontSize: 17,
