@@ -61,7 +61,7 @@ var UsersList = React.createClass({
   },
 
   fetchData() {
-    var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/matches"
+    var url = "http://172.24.128.164:3000/api/user/"+this.state.fbID.toString()+"/matches"
     fetch(url, {method: "GET"})
     .then((response) => response.json())
     .then((responseData) => {
@@ -71,7 +71,7 @@ var UsersList = React.createClass({
   },
 
   render() {
-    
+
     return (
       <GridView
         items={this.state.matches}

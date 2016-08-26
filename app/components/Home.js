@@ -19,6 +19,7 @@ import TimerMixin from 'react-timer-mixin';
 import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
 import NavigatorTabBar from './NavigatorTabBar';
 import MatchesPage from './Matches';
+import ProfilePage from './Profile';
 import Icon from 'react-native-vector-icons/Ionicons';
 import SwipeCards from 'react-native-swipe-cards';
 
@@ -66,7 +67,7 @@ export default React.createClass({
         let user_info = JSON.parse(value)
         // Alert.alert(JSON.parse(value).id)
 
-        fetch("http://192.168.43.88:3000/api/user/", {
+        fetch("http://172.24.128.164:3000/api/user/", {
           method: "POST",
           headers: {
           'Accept': 'application/json',
@@ -107,7 +108,7 @@ export default React.createClass({
 
     getPictureData: function() {
       // let x = this.state.fbID
-      var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/unseen"
+      var url = "http://172.24.128.164:3000/api/user/"+this.state.fbID.toString()+"/unseen"
       fetch(url, {method: "GET"})
       .then((response) => response.json())
       .then((responseData) => {
@@ -119,7 +120,7 @@ export default React.createClass({
     },
 
     likePicture: function() {
-      fetch("http://192.168.43.88:3000/api/picture/newpictures", {
+      fetch("http://172.24.128.164:3000/api/picture/newpictures", {
         method: "POST",
         headers: {
         'Accept': 'application/json',
@@ -134,7 +135,7 @@ export default React.createClass({
       .done();
     },
     dislikePicture: function() {
-      fetch("http://192.168.43.88:3000/api/picture/newpictures", {
+      fetch("http://172.24.128.164:3000/api/picture/newpictures", {
         method: "POST",
         headers: {
         'Accept': 'application/json',
@@ -150,7 +151,7 @@ export default React.createClass({
     },
     newMatches: function() {
       // let x = this.state.fbID
-      var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/newmatches"
+      var url = "http://172.24.128.164:3000/api/user/"+this.state.fbID.toString()+"/newmatches"
       fetch(url, {method: "GET"})
       .then((response) => response.json())
       .then((responseData) => {
@@ -209,6 +210,7 @@ export default React.createClass({
 
       <ScrollView tabLabel="account-box">
       <View style={styles.innercontainer}>
+        <ProfilePage />
         <FBLogin />
         </View>
       </ScrollView>
