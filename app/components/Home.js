@@ -1,3 +1,4 @@
+
 'use strict';
 
 import React from 'react';
@@ -16,7 +17,8 @@ import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
 import TimerMixin from 'react-timer-mixin';
 
 import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
-import FacebookTabBar from './NavigatorTabBar';
+import NavigatorTabBar from './NavigatorTabBar';
+import MatchesPage from './Matches';
 import Icon from 'react-native-vector-icons/Ionicons';
 import SwipeCards from 'react-native-swipe-cards';
 
@@ -104,7 +106,7 @@ export default React.createClass({
     },
 
     getPictureData: function() {
-      let x = this.state.fbID
+      // let x = this.state.fbID
       var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/unseen"
       fetch(url, {method: "GET"})
       .then((response) => response.json())
@@ -146,6 +148,17 @@ export default React.createClass({
       })
       .done();
     },
+    newMatches: function() {
+      // let x = this.state.fbID
+      var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/newmatches"
+      fetch(url, {method: "GET"})
+      .then((response) => response.json())
+      .then((responseData) => {
+          // this.setState({"cards": [{name: responseData.title, image: responseData.link}]});
+          // this.setState({"imgurID": responseData.imgurID})
+      })
+      .done();
+    },
 
     handleYup (card) {
       this.likePicture()
@@ -156,17 +169,15 @@ export default React.createClass({
       this.getPictureData()
     },
     cardRemoved (index) {
+      this.newMatches()
   },
-
-
-
 
 
   render() {
 
     return <ScrollableTabView
       style={styles.container}
-      renderTabBar={()=><FacebookTabBar backgroundColor='rgba(200, 200, 200, 0.43)' />}
+      renderTabBar={()=><NavigatorTabBar backgroundColor='rgba(200, 200, 200, 0.43)' />}
       tabBarPosition='overlayTop'
     >
 
@@ -188,12 +199,11 @@ export default React.createClass({
       </ScrollView>
 
       <ScrollView tabLabel="forum">
-        <View style={styles.innercontainer}>
-        <Text>HELLOOO</Text>
-          <Icon name='logo-android' color='#A4C639' size={300} style={styles.icon} />
-          <Icon name='logo-android' color='black' size={300} style={styles.icon} />
-
+        <View style={styles.textcontainer}>
+        <Text style={styles.text}>Your Matches!</Text>
         </View>
+
+          <MatchesPage />
       </ScrollView>
 
 
@@ -228,18 +238,18 @@ const styles = StyleSheet.create({
   },
   textcontainer: {
     // flex: 1,
-    marginTop: 10,
-    marginLeft: 2,
-    marginRight: 2,
-    fontSize: 15,
+    paddingTop: 80,
+    paddingBottom: 10,
+    fontSize: 22,
     fontWeight: '500',
     alignItems: 'center',
     textAlign: 'center',
+    backgroundColor: 'rgba(200, 200, 200, 0.43)',
+
   },
   picturecontainer: {
     flex:1,
     marginTop: 10,
-    // position: 'absolute',
     bottom: 0,
     // width: windowSize.width-20,
     // height: windowSize.height-150
