@@ -1,6 +1,6 @@
 'use strict';
 import React from 'react';
-import {View, Text, StyleSheet, TextInput, Image, Icon} from "react-native";
+import {View, Alert, Text, StyleSheet, TextInput, Image, AsyncStorage, Icon} from "react-native";
 import {
   Scene,
   Router,
@@ -37,13 +37,12 @@ const scenes = Actions.create(
   <Scene key="root">
     <Scene key="home" component={Home} hideNavBar={true}/>
   </Scene>
-  // </Scene>
 );
 
 var Launch = React.createClass({
  getInitialState(){
     return {
-      user: null
+      user: null,
     };
   },
 
@@ -54,8 +53,6 @@ var Launch = React.createClass({
     if(this.state.user) {
         var info = this.state.info;
           return <Router scenes={scenes}/>
-
-
 
     } else {
       return (
@@ -74,11 +71,9 @@ var Launch = React.createClass({
           <Text style={styles.greyFont}>By continuing, you agree to our <Text style={styles.whiteFont}>Terms of Service</Text> and <Text style={styles.whiteFont}>Privacy policy</Text></Text>
         </View>
 
-        { user && <Photo user={user} /> }
-        { user && <Info user={user} /> }
 
         <FBLogin style={styles.loginbutton}
-          permissions={["email","user_friends"]}
+          permissions={["email","public_profile"]}
           onLogin={function(data){
             console.log("Logged in!");
             console.log(data);
@@ -89,9 +84,89 @@ var Launch = React.createClass({
             _this.setState({ user : null });
           }}
           onLoginFound={function(data){
+
+              // var userObj = {}
+              // AsyncStorage.setItem("fbID", data.credentials.userId)
+
+                var api = `https://graph.facebook.com/v2.3/${data.credentials.userId}/picture?width=${FB_PHOTO_WIDTH}&redirect=false&access_token=${data.credentials.token}`;
+
+                fetch(api)
+                  .then((response) => response.json())
+                  .then((responseData) => {
+                    // userObj["photo"] = responseData.urlA
+                    // Alert.alert(JSON.stringify(responseData.data.url))
+                    AsyncStorage.setItem("picture", responseData.data.url)
+                    // AsyncStorage.setItem("photo", responseData.data.url)
+
+                  })
+                  .done();
+
+
+                var api = `https://graph.facebook.com/v2.3/${data.credentials.userId}?fields=id,name,age_range,gender&access_token=${data.credentials.token}`;
+
+                fetch(api)
+                  .then((response) => response.json())
+                  .then((responseData) => {
+                    AsyncStorage.getItem("picture").then((value) => {
+                      let obj = {}
+                      obj["pic"] = value;
+                      obj["id"] = responseData.id;
+                      obj["name"] = responseData.name;
+                      obj["age"] = responseData.age_range.min;
+                      obj["gender"] = responseData.gender;
+                      // Alert.alert(value.photo)
+                      // Alert.alert(JSON.stringify(obj.name))
+
+                      AsyncStorage.setItem("user", JSON.stringify(obj))
+                      // AsyncStorage.setItem("user", JSON.stringify({ age_range:responseData.age_range.min,photo: value, gender:responseData.gender, name:responseData.name }))
+                    }).done();
+                    // Alert.alert(JSON.stringify(responseData.age_range.min))
+                    // AsyncStorage.mergeItem("user", JSON.strinname:responseData.name)
+                    // AsyncStorage.mergeItem("user", JSON.stringify({age_range: responseData.age_range.min}))
+                    // AsyncStorage.mergeItem("user", JSON.stringify({gender: responseData.gender}))
+
+                    // Alert.alert(JSON.stringify(responseData.birthday))
+                  })
+                  .done();
+
+
+
+
+
+                    // AsyncStorage.getItem("user").then((value) => {
+                      // Alert.alert(JSON.stringify(userObj))
+                    // }).done();              // fetch("http://172.24.128.164:3000/api/user/", {
+              //   method: "POST",
+              //   headers: {
+              //   'Accept': 'application/json',
+              //   'Content-Type': 'application/json'
+              //   },
+              //   body: JSON.stringify({
+              //     birthday: null,
+              //     dateJoined: null,
+              //     description: null,
+              //     photo: null,
+              //     gender: null,
+              //     preferredAgeMax: null,
+              //     preferredLocationKM: null,
+              //     long: null,
+              //     dateLastLogin: null,
+              //     name: null,
+              //     fbID: null,
+              //     preferredAgeMin: null,
+              //     lat: null,
+              //     age: null
+              //   })
+              // })
+              // .done();
+            // { user && <Info user={user} /> }
+
+
             console.log("Existing login found.");
-            console.log(data);
-            _this.setState({ user : data.credentials });
+            console.log(data.credentials.token);
+            // console.log(this.state.photo);
+
+            _this.setState({ user : data.credentials.userId });
           }}
           onLoginNotFound={function(){
             console.log("No user logged in.");
@@ -155,17 +230,6 @@ var Photo = React.createClass({
 
     return (
       <View style={styles.bottomBump}/>
-
-        // <Image
-        //   style={photo &&
-        //     {
-        //       height: photo.height,
-        //       width: photo.width,
-        //     }
-        //   }
-        //   source={{uri: photo && photo.url}}
-        // />
-      // </View>
     );
   },
   renderLoading: function(){
@@ -192,36 +256,56 @@ var Info = React.createClass({
   componentWillMount: function(){
     var _this = this;
     var user = this.props.user;
-    var api = `https://graph.facebook.com/v2.3/${user.userId}?fields=name,email&access_token=${user.token}`;
+    // var api = `https://graph.facebook.com/v2.3/${user.userId}?fields=id,name,age_range,education,gender,picture,birthday&access_token=${user.token}`;
+    //
+    // fetch(api)
+    //   .then((response) => response.json())
+    //   .then((responseData) => {
+    //     _this.setState({
+    //       info : {
+    //         id: responseData.id,
+    //         name : responseData.name,
+    //         age: responseData.age_range.min,
+    //         photo: responseData.picture.data.url,
+    //         education: responseData.education[0].school.name,
+    //         birthday: responseData.education.birthday,
+    //         gender: responseData.gender
+    //       }
+    //     });
+    //     AsyncStorage.setItem("fbID", "HELLO");
+    //   })
+    //   .done();
 
-    fetch(api)
-      .then((response) => response.json())
-      .then((responseData) => {
-        _this.setState({
-          info : {
-            name : responseData.name,
-            email: responseData.email,
-          },
-        });
+
+    // getUserData: function() {
+      fetch("http://172.24.128.164:3000/api/user/", {
+        method: "POST",
+        headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          birthday: this.state.info.birthday,
+          dateJoined: null,
+          description: null,
+          photo: this.state.info.photo,
+          gender: this.state.info.gender,
+          preferredAgeMax: null,
+          preferredLocationKM: null,
+          long: null,
+          dateLastLogin: null,
+          name: this.state.info.name,
+          fbID: this.state.info.id,
+          preferredAgeMin: null,
+          lat: null,
+          age: this.state.info.age
+        })
       })
       .done();
-  },
+    // }
+    },
 
   render(){
-    // var info = this.state.info;
-    // return <Router createReducer={reducerCreate} sceneStyle={{backgroundColor:'#F7F7F7'}}>
-    //   <Scene key="modal" component={Modal} >
-    //     <Scene key="root" hideNavBar={false}>
-    //       <Scene key="home" component={Home} title="Replace" type={ActionConst.REPLACE} intial={true}/>
-    //     </Scene>
-    //   </Scene>
-    // </Router>
-
-      // console.log("you are in the last render")
-      <View style={styles.bottomBump}>
-      <Text>HELLOOOOOOOOOOO </Text>
-      </View>
-    // );
   }
 });
 
@@ -241,9 +325,7 @@ var styles = StyleSheet.create({
       justifyContent:'center',
       backgroundColor: '#FF3366',
       height: 60
-      // paddingLeft: 15,
-      // marginRight: 15,
-      // marginBottom: 15
+
     },
     bottomBump: {
       marginBottom: 50,

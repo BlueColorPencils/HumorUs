@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
+import TimerMixin from 'react-timer-mixin';
 
 import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
 import FacebookTabBar from './NavigatorTabBar';
@@ -47,37 +48,83 @@ let NoMoreCards = React.createClass({
 
 
 export default React.createClass({
+    mixins: [TimerMixin],
 
      getInitialState: function() {
         return {myKey:'Loading',
         cards: {},
         imgurID: '',
-        outOfCards: false};
+        outOfCards: false,
+        fbID: ''};
     },
 
     componentWillMount: function() {
-      this.getPictureData()
+
+      AsyncStorage.getItem("user").then((value) => {
+        let user_info = JSON.parse(value)
+        // Alert.alert(JSON.parse(value).id)
+
+        fetch("http://192.168.43.88:3000/api/user/", {
+          method: "POST",
+          headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            birthday: null,
+            dateJoined: null,
+            description: null,
+            photo: user_info.pic,
+            gender: user_info.gender,
+            preferredAgeMax: null,
+            preferredLocationKM: null,
+            long: null,
+            dateLastLogin: null,
+            name: user_info.name,
+            fbID: user_info.id,
+            preferredAgeMin: null,
+            lat: null,
+            age: user_info.age
+          })
+        }).done();
+        // Alert.alert(this.state.fbID)
+        this.setState({"fbID": user_info.id})
+      }).done();
+
+       this.setTimeout(() => {
+        this.getPictureData() },400
+      );
+
+
+      // AsyncStorage.getItem("fbID").then((value) => {
+      //   this.setState({"fbIDs": value})
+      // }).done();
+
+
     },
 
     getPictureData: function() {
-      fetch("http://172.24.128.164:3000/api/user/11111111/unseen", {method: "GET"})
+      let x = this.state.fbID
+      var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/unseen"
+      fetch(url, {method: "GET"})
       .then((response) => response.json())
       .then((responseData) => {
           this.setState({"cards": [{name: responseData.title, image: responseData.link}]});
           this.setState({"imgurID": responseData.imgurID})
       })
       .done();
+
     },
 
     likePicture: function() {
-      fetch("http://172.24.128.164:3000/api/picture/newpictures", {
+      fetch("http://192.168.43.88:3000/api/picture/newpictures", {
         method: "POST",
         headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          fbID: "11111111",
+          fbID: this.state.fbID,
           imgurID: this.state.imgurID,
           relationship: "LIKES",
         })
@@ -85,14 +132,14 @@ export default React.createClass({
       .done();
     },
     dislikePicture: function() {
-      fetch("http://172.24.128.164:3000/api/picture/newpictures", {
+      fetch("http://192.168.43.88:3000/api/picture/newpictures", {
         method: "POST",
         headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          fbID: "11111111",
+          fbID: this.state.fbID,
           imgurID: this.state.imgurID,
           relationship: "DISLIKES",
         })
@@ -116,8 +163,6 @@ export default React.createClass({
 
 
   render() {
-
-    // const IMAGE_PREFETCH_URL = this.state.image
 
     return <ScrollableTabView
       style={styles.container}
@@ -166,7 +211,6 @@ export default React.createClass({
 
 const styles = StyleSheet.create({
   container: {
-    // marginTop: 30,
   },
   icon: {
     width: 300,
@@ -214,18 +258,15 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     elevation: 1,
     width: windowSize.width-20,
-    // height: windowSize.height-115
+    height: windowSize.height-115
   },
   thumbnail: {
-    flex: 1,
-    // width: 50,
-    // height: 50
-    // marginLeft: 50,
-    width: windowSize.width-50,
-    height: windowSize.height,
-    // position: 'relative',
-    // top: 0,
-    // left: 0
+    flex: 2,
+    flexDirection: 'row',
+    marginBottom: 10,
+    width: windowSize.width-40,
+    height: windowSize.height-190,
+    resizeMode:'contain'
   },
   text: {
     fontSize: 17,
@@ -243,116 +284,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   }
 });
-
-
-
-// import React from 'react';
-// import {
-//   View,
-//   Text,
-//   Component,
-//   StyleSheet,
-//   TouchableHighlight,
-//   ScrollView,
-//   Image,
-//   Dimensions,
-//   ListView
-// } from "react-native";
-//
-// let windowWidth = Dimensions.get("window").width
-// import API from "./api"
-// // let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-//
-//
-// class Home extends React.Component {
-//   // constructor (props) {
-//   //   super(props)
-//   //   this.state = {
-//   //     dataSource: ds,
-//   //     loading: true,
-//   //     images: []
-//   //   }
-//   // }
-//   // componentDidMount () {
-//   //   API.get()
-//   //     .then((response) => {
-//   //       console.log("HELLO", response)
-//   //       this.setState({
-//   //         dataSource: ds.cloneWithRows(response.data.items),
-//   //         loading: false
-//   //       })
-//   //     }, (error) => {
-//   //     console.log('error: ', error)
-//   //   })
-//   // }
-//   // renderRow (rowData) {
-//   //   if (rowData.link.match(/\.(jpg|png|gif)/g)) {
-//   //     return (
-//   //       <View>
-//   //         <Image
-//   //           source={{ uri: rowData.link }}
-//   //           style={{width: windowWidth, height: windowWidth}} />
-//   //       </View>)
-//   //   } else {
-//   //     return null
-//   //   }
-//   // }
-//   // render () {
-//   //   let { loading, images } = this.state
-//   //   if (loading) {
-//   //     images = (
-//   //       <ListView
-//   //                  dataSource={this.state.dataSource}
-//   //                  renderRow={this.renderRow.bind(this)} />
-//   //
-//   //       // <View style={style.loadingContainer}>
-//   //       //   <Text style={style.loading}>Loading images…</Text>
-//   //       // </View>
-//   //     )
-//   //   }
-//   //   if (!loading) {
-//   //     images = <ListView
-//   //                dataSource={this.state.dataSource}
-//   //                renderRow={this.renderRow.bind(this)} />
-//   //   }
-//   //   return (
-//   //     <View style={{flex: 1}}>
-//   //       <TouchableHighlight
-//   //         underlayColor="transparent"
-//   //         onPress={this.props.closeModal}
-//   //         style={style.closeButton}>
-//   //         <Text style={style.closeButtonText}>MEOW</Text>
-//   //       </TouchableHighlight>
-//   //       <ScrollView style={{flex: 1}}>
-//   //         {images}
-//   //       </ScrollView>
-//   //     </View>
-//   //   )
-//   // }
-// }
-//
-// var style = StyleSheet.create({
-//     container: {
-//       // marginTop: 150,
-//       flex: 1,
-//       alignItems: 'center',
-//       justifyContent: 'center',
-//       backgroundColor: "#F5FCFF"
-//     },
-//     innercontainer: {
-//         flex: 1,
-//         justifyContent: "center",
-//         alignItems: "center",
-//         backgroundColor: "#F5FCFF"
-//     },
-//     welcome: {
-//         fontSize: 20,
-//         textAlign: "center",
-//         margin: 10
-//     },
-//     instructions: {
-//         textAlign: "center",
-//         color: "#333333",
-//         marginBottom: 5,
-//     },
-// });
