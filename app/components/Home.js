@@ -64,17 +64,6 @@ let NoMoreCards = React.createClass({
   }
 })
 
-// const reducerCreate = params=>{
-//     const defaultReducer = Reducer(params);
-//     return (state, action)=>{
-//         console.log("ACTION:", action);
-//         return defaultReducer(state, action);
-//     }
-// };
-// const scenes = Actions.create(
-//     <Scene key="launch" component={Launching} hideNavBar={true}/>
-// );
-
 export default React.createClass({
     mixins: [TimerMixin],
 
@@ -102,7 +91,7 @@ export default React.createClass({
             birthday: null,
             dateJoined: null,
             description: null,
-            // photo: user_info.pic,
+            photo: user_info.photo,
             gender: user_info.gender,
             preferredAgeMax: null,
             preferredLocationMI: null,
@@ -115,19 +104,12 @@ export default React.createClass({
             age: user_info.age
           })
         }).done();
-        // Alert.alert(this.state.fbID)
         this.setState({"fbID": user_info.id})
       }).done();
 
        this.setTimeout(() => {
         this.getPictureData() },400
       );
-
-
-      // AsyncStorage.getItem("fbID").then((value) => {
-      //   this.setState({"fbIDs": value})
-      // }).done();
-
 
     },
 
@@ -199,21 +181,6 @@ export default React.createClass({
     cardRemoved (index) {
       this.newMatches()
   },
-
-  //
-  // renderScene(route, navigator) {
-  //   if(route.name == 'Profile') {
-  //       <TouchableHighlight onPress={ () => this.props.navigator.pop() }>
-  //         <Text style={styles.textcontainer}>GO To Home</Text>
-  //       </TouchableHighlight>
-  //
-  //     return <ProfilePage navigator={navigator} />
-  //   }
-  //   if(route.name == 'Launch') {
-  //     return <Launch navigator={navigator} />
-  //   }
-  // },
-
 
   render() {
     // const routes = [

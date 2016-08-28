@@ -124,46 +124,46 @@ var ProfilePage = React.createClass({
 
   render() {
     return(
+      <ScrollView>
       <View style={styles.profilecontainer}>
           <Image
             source={{uri: this.state.photo}}
-            style={styles.profilepicture}/>
+            style={styles.profilepicture}
+          />
 
           <Text>{this.state.name}</Text>
+
           <View style={styles.formcontainer}>
-          <Form ref='logInForm' label="Information" onChange={this._handleFormChange.bind(this)}>
-                    <Separator label='Birthday'/>
-                    <InputField ref='birthday' placeholder='hi'
-                     value='' autoCapitalize='none' autoCorrect={false}/>
+            <Form ref='logInForm' label="Information" onChange={this._handleFormChange.bind(this)}>
+              <Separator label='Birthday'/>
+              <InputField ref='birthday' placeholder='hi'
+               value='' autoCapitalize='none' autoCorrect={false}/>
 
-                    <Separator label='Gender'/>
-                    <InputField ref='gender' placeholder={this.state.gender} value='' autoCapitalize='none' autoCorrect={false}  keyboardType='email-address'/>
+              <Separator label='Gender'/>
+              <InputField ref='gender' placeholder={this.state.gender} value='' autoCapitalize='none' autoCorrect={false}  keyboardType='email-address'/>
 
-                    <Separator label='About Me'/>
-                    <InputField ref='description' placeholder={this.state.description} value='' secureTextEntry={true}/>
-
-
-                </Form>
+              <Separator label='About Me'/>
+              <InputField ref='description' placeholder={this.state.description} value='' secureTextEntry={true}/>
+            </Form>
 
 
-                  <FBLogin
-                    onLogout={() => {
-                      // this.props.navigator.pop()
-                        this.props.navigator.push({
-                            name: 'FBLogin',
-                        });
-                    }}
-                    />
-  <Button containerStyle={styles.buttonContainer} onPress={this._handleSubmit}>
-      <Text style={styles.button} allowFontScaling={false}>
-          Save
-      </Text>
-  </Button>
-      </View>
-      </View>
+            <FBLogin
+              onLogout={() => {
+                this.props.navigator.push({
+                    name: 'FBLogin',
+                });
+              }}
+            />
 
+            <Button containerStyle={styles.buttonContainer} onPress={this._handleSubmit}>
+              <Text style={styles.button} allowFontScaling={false}>
+                  Save
+              </Text>
+            </Button>
 
-
+          </View>
+        </View>
+      </ScrollView>
     )
   }
 });

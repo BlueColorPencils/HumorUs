@@ -55,13 +55,11 @@ var UserPage = React.createClass({
 
       AsyncStorage.getItem("user").then((value) => {
         let user_info = JSON.parse(value)
-        // Alert.alert(JSON.parse(value).id)
         this.setState({"fbID": user_info.id})
         let url = "http://192.168.43.88:3000/api/user/"+user_info.id
         fetch(url, {method: "GET"})
           .then((response) => response.json())
           .then((responseData) => {
-            // Alert.alert(responseData.gender)
             this.setState({
               birthday: responseData.birthday,
               education: responseData.education,
@@ -78,56 +76,36 @@ var UserPage = React.createClass({
               age: responseData.age
             })
           }).done();
-        // Alert.alert(this.state.fbID)
         }).done();
 
-      //  this.setTimeout(() => {
-      //   this.setUserData() },400
-      // );
+
     }
 
 
   render() {
     return(
+      <ScrollView>
       <View style={styles.profilecontainer}>
           <Image
             source={{uri: this.state.photo}}
             style={styles.profilepicture}/>
 
           <Text>{this.state.name}</Text>
+
           <Separator label='Birthday'/>
            <Text>{this.state.age}</Text>
+
           <Separator label='Gender'/>
           <Text>{this.state.gender} </Text>
+
           <Separator label='Preferred Gender'/>
           <Text>{this.state.preferredGender} </Text>
 
           <Separator label='About Me'/>
-          <Text>{this.state.description}
-                    <InputField ref='description' placeholder={this.state.description} value='' secureTextEntry={true}/>
+          <Text>{this.state.description}</Text>
 
-
-                </Form>
-
-
-                  <FBLogin
-                    onLogout={() => {
-                      // this.props.navigator.pop()
-                        this.props.navigator.push({
-                            name: 'FBLogin',
-                        });
-                    }}
-                    />
-  <Button containerStyle={styles.buttonContainer} onPress={this._handleSubmit}>
-      <Text style={styles.button} allowFontScaling={false}>
-          Save
-      </Text>
-  </Button>
-      </View>
-      </View>
-
-
-
+        </View>
+      </ScrollView>
     )
   }
 });
@@ -135,29 +113,17 @@ var UserPage = React.createClass({
 
 const styles = StyleSheet.create({
   profilecontainer: {
-    // marginTop: 70,
     flex: 1,
     position: 'relative',
     top: 0,
-    // height: windowSize.height-190,
-    // alignItems: 'center',
-    // backgroundColor: 'rgba(200, 200, 200, 0.43)',
-    // alignItems: 'center',
-    // justifyContent: 'center',
   },
   profiletext: {
-    // marginTop: 70,
     flex: 1,
     position: 'relative',
     top: 0,
     height: windowSize.height-190,
-    // alignItems: 'center',
-    // backgroundColor: 'rgba(200, 200, 200, 0.43)',
-    // alignItems: 'center',
-    // justifyContent: 'center',
   },
   textcontainer: {
-    // flex: 1,
     paddingTop: 80,
     paddingBottom: 10,
     fontSize: 22,
@@ -165,29 +131,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     textAlign: 'center',
     backgroundColor: 'rgba(200, 200, 200, 0.43)',
-
   },
-    formcontainer: {
-      // flex: 1,
-      // alignItems: 'left',
-      // textAlign: 'left',
-      // backgroundColor: 'rgba(200, 200, 200, 0.43)',
-
-    },
   picturecontainer: {
     flex:1,
     marginTop: 10,
     bottom: 0,
-    // width: windowSize.width-20,
-    // height: windowSize.height-150
   },
   profilepicture: {
     width: 200,
     height: 200,
     borderRadius: 25,
-    // resizeMode:'contain',
-    // flex: 1,
-    // alignItems: 'center',
   },
   text: {
     fontSize: 17,
@@ -197,7 +150,6 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingLeft: 10,
     paddingBottom: 10,
-    // textAlign: 'center',
   },
    buttonContainer: {
       marginLeft: 16,

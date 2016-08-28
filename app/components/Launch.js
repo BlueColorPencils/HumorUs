@@ -1,43 +1,18 @@
 'use strict';
 import React from 'react';
 import {View, Alert, Text, StyleSheet, TextInput, Image, Navigator, AsyncStorage, Icon} from "react-native";
-import {
-  Scene,
-  Router,
-  TabBar,
-  Modal,
-  Schema,
-  Actions,
-  Reducer,
-  ActionConst
-} from 'react-native-router-flux'
-// var FBLoginMock = require('./FBLoginMock');
+
 import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
 import MainApp from './Home';
 import Button from "react-native-button";
 
-
-var TabView = require('./TabView');
-var TabIcon = require('./TabIcon');
+//
+// var TabView = require('./TabView');
+// var TabIcon = require('./TabIcon');
 
 var FB_PHOTO_WIDTH = 900;
 var Dimensions = require('Dimensions');
 var windowSize = Dimensions.get('window');
-
-
-// const reducerCreate = params=>{
-//     const defaultReducer = Reducer(params);
-//     return (state, action)=>{
-//         console.log("ACTION:", action);
-//         return defaultReducer(state, action);
-//     }
-// };
-//
-// const scenes = Actions.create(
-//   <Scene key="root">
-//     <Scene key="home" component={Home} hideNavBar={true}/>
-//   </Scene>
-// );
 
 var Launch = React.createClass({
  getInitialState(){
@@ -51,137 +26,105 @@ var Launch = React.createClass({
   },
 
   componentWillMount() {
-
      navigator.geolocation.getCurrentPosition(
       (position) => {
         this.setState({lat: JSON.stringify(position.coords.latitude), long: JSON.stringify(position.coords.longitude)})
       },
       (error) => alert(error.message),
-      {enableHighAccuracy: true, timeout: 10000, maximumAge: 1000}
+      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
   },
-
-  // renderScene(route, navigator) {
-  //    return <MainApp navigator={navigator} />
-  // },
-
-  // render() {
-  //   const routes = [
-  //     {name: 'FBLogin', index: 0},
-  //     {name: 'MainApp', index: 1},
-  //   ];
-  //   return (
-  //     <Navigator
-  //       initialRoute={routes[0]}
-  //       renderScene = {this.renderScene} />
-  //   );
-  // }
 
   render() {
     var _this = this;
     var user = this.state.user;
 
-    // if(this.state.user) {
-    //     var info = this.state.info;
-    //     return (
-    //       // <Navigator
-    //       //   renderScene = {this.renderScene}/>
-    //
-    //     )
-    // } else {
-      return (
-      <View style={styles.container}>
-        <Image style={styles.bg} source={{uri: 'https://scontent-sea1-1.xx.fbcdn.net/t31.0-8/13323231_10207167534975001_2138488519942298615_o.jpg'}} />
+    return (
+    <View style={styles.container}>
+      <Image style={styles.bg} source={{uri: 'https://scontent-sea1-1.xx.fbcdn.net/t31.0-8/13323231_10207167534975001_2138488519942298615_o.jpg'}} />
 
-        <View style={styles.message}>
-          <Text style={styles.messageFont}>Find your lol mate.</Text>
-        </View>
-
-        <View style={styles.header}>
-            <Image style={styles.logo} source={{uri: 'http://i.imgur.com/da4G0Io.png'}} />
-        </View>
-
-        <View style={styles.terms}>
-          <Text style={styles.greyFont}>By continuing, you agree to our <Text style={styles.whiteFont}>Terms of Service</Text> and <Text style={styles.whiteFont}>Privacy policy</Text></Text>
-        </View>
-
-        <FBLogin style={styles.loginbutton}
-          permissions={["email","public_profile"]}
-          onLogin={(data) => {
-             this.props.navigator.push({
-                 name: 'Main',
-             });
-
-            console.log("Logged in!");
-            console.log(data);
-            _this.setState({ user : data.credentials });
-          }}
-          // onLogout={() => {
-          //   console.log("Logged out.");
-          //   _this.setState({ user : null });
-          //   Alert.alert("Logged out")
-          //   return <Router scenes={scenes}/>
-          // }}
-          onLoginFound={(data) => {
-               this.props.navigator.push({
-                   name: 'Main',
-               });
-
-            var api = `https://graph.facebook.com/v2.7/${data.credentials.userId}/picture?width=${FB_PHOTO_WIDTH}&redirect=false&access_token=${data.credentials.token}`;
-
-            fetch(api)
-              .then((response) => response.json())
-              .then((responseData) => {
-                AsyncStorage.setItem("picture", responseData.data.url)
-              })
-              .done();
-
-            var api = `https://graph.facebook.com/v2.7/${data.credentials.userId}?fields=id,name,age_range,gender&access_token=${data.credentials.token}`;
-
-            fetch(api)
-              .then((response) => response.json())
-              .then((responseData) => {
-                AsyncStorage.getItem("picture").then((value) => {
-                  let obj = {}
-
-                  obj["pic"] = value;
-                  obj["id"] = responseData.id;
-                  obj["name"] = responseData.name;
-                  obj["age"] = responseData.age_range.min;
-                  obj["gender"] = responseData.gender;
-
-                  AsyncStorage.setItem("user", JSON.stringify(obj))
-
-                }).done();
-              })
-              .done();
-
-            console.log("Existing login found.");
-            console.log(data.credentials.token);
-
-            _this.setState({ user : data.credentials.userId });
-
-
-          }}
-          onLoginNotFound={()=>{
-            console.log("No user logged in.");
-            _this.setState({ user : null });
-          }}
-          onError={(data)=>{
-            console.log("ERROR");
-            console.log(data);
-          }}
-          onCancel={()=>{
-            console.log("User cancelled.");
-          }}
-          onPermissionsMissing={(data)=>{
-            console.log("Check permissions!");
-            console.log(data);
-          }}
-        />
+      <View style={styles.message}>
+        <Text style={styles.messageFont}>Find your lol mate.</Text>
       </View>
+
+      <View style={styles.header}>
+          <Image style={styles.logo} source={{uri: 'http://i.imgur.com/da4G0Io.png'}} />
+      </View>
+
+      <View style={styles.terms}>
+        <Text style={styles.greyFont}>By continuing, you agree to our <Text style={styles.whiteFont}>Terms of Service</Text> and <Text style={styles.whiteFont}>Privacy policy</Text></Text>
+      </View>
+
+      <FBLogin style={styles.loginbutton}
+        permissions={["email","public_profile"]}
+        onLogin={(data) => {
+           this.props.navigator.push({
+               name: 'Main',
+           });
+
+          console.log("Logged in!");
+          console.log(data);
+          _this.setState({ user : data.credentials });
+        }}
+          // onLogout={() => {
+          //   _this.setState({ user : null });
+          // }}
+
+        onLoginFound={(data) => {
+          this.props.navigator.push({
+            name: 'Main',
+          });
+
+          var api = `https://graph.facebook.com/v2.7/${data.credentials.userId}/picture?width=${FB_PHOTO_WIDTH}&redirect=false&access_token=${data.credentials.token}`;
+
+          fetch(api)
+            .then((response) => response.json())
+            .then((responseData) => {
+              AsyncStorage.setItem("picture", responseData.data.url)
+            })
+            .done();
+
+          var api = `https://graph.facebook.com/v2.7/${data.credentials.userId}?fields=id,name,age_range,gender&access_token=${data.credentials.token}`;
+
+          fetch(api)
+            .then((response) => response.json())
+            .then((responseData) => {
+              AsyncStorage.getItem("picture").then((value) => {
+                let obj = {}
+                obj["photo"] = value;
+                obj["id"] = responseData.id;
+                obj["name"] = responseData.name;
+                obj["age"] = responseData.age_range.min;
+                obj["gender"] = responseData.gender;
+
+                AsyncStorage.setItem("user", JSON.stringify(obj))
+              }).done();
+            })
+          .done();
+
+          console.log("Existing login found.");
+          console.log(data.credentials.token);
+          _this.setState({ user : data.credentials.userId });
+
+        }}
+        onLoginNotFound={()=>{
+          console.log("No user logged in.");
+          _this.setState({ user : null });
+        }}
+        onError={(data)=>{
+          console.log("ERROR");
+          console.log(data);
+        }}
+        onCancel={()=>{
+          console.log("User cancelled.");
+        }}
+        onPermissionsMissing={(data)=>{
+          console.log("Check permissions!");
+          console.log(data);
+        }}
+        />
+    </View>
     )
-    // }
   }
 });
 
@@ -258,7 +201,6 @@ var styles = StyleSheet.create({
     inputPassword: {
         marginLeft: 15,
         width: 20,
-        // marginTop: -10,
         height: 22
     },
     inputUsername: {
@@ -268,7 +210,6 @@ var styles = StyleSheet.create({
     },
     inputContainer: {
         padding: 12,
-        // borderWidth: 1,
         borderBottomColor: '#CCC',
         borderColor: 'transparent'
     },
