@@ -9,19 +9,34 @@ import {
   TouchableHighlight,
   Alert,
   View,
+  Navigator,
   Image,
   AsyncStorage,
 } from 'react-native';
 
-import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
+import {
+  Scene,
+  Router,
+  TabBar,
+  Modal,
+  Schema,
+  Actions,
+  Reducer,
+  ActionConst
+} from 'react-native-router-flux'
+
 import TimerMixin from 'react-timer-mixin';
 
 import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
 import NavigatorTabBar from './NavigatorTabBar';
 import MatchesPage from './Matches';
 import ProfilePage from './Profile';
+import DisplayUserPage from './DisplayUser';
 import Icon from 'react-native-vector-icons/Ionicons';
 import SwipeCards from 'react-native-swipe-cards';
+import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
+
+import Launch from './Launch';
 
 
 var Dimensions = require('Dimensions');
@@ -49,11 +64,21 @@ let NoMoreCards = React.createClass({
   }
 })
 
+// const reducerCreate = params=>{
+//     const defaultReducer = Reducer(params);
+//     return (state, action)=>{
+//         console.log("ACTION:", action);
+//         return defaultReducer(state, action);
+//     }
+// };
+// const scenes = Actions.create(
+//     <Scene key="launch" component={Launching} hideNavBar={true}/>
+// );
 
 export default React.createClass({
     mixins: [TimerMixin],
 
-     getInitialState: function() {
+     getInitialState() {
         return {myKey:'Loading',
         cards: {},
         imgurID: '',
@@ -61,13 +86,13 @@ export default React.createClass({
         fbID: ''};
     },
 
-    componentWillMount: function() {
+    componentWillMount() {
 
       AsyncStorage.getItem("user").then((value) => {
         let user_info = JSON.parse(value)
         // Alert.alert(JSON.parse(value).id)
 
-        fetch("http://172.24.128.164:3000/api/user/", {
+        fetch("http://192.168.43.88:3000/api/user/", {
           method: "POST",
           headers: {
           'Accept': 'application/json',
@@ -77,10 +102,10 @@ export default React.createClass({
             birthday: null,
             dateJoined: null,
             description: null,
-            photo: user_info.pic,
+            // photo: user_info.pic,
             gender: user_info.gender,
             preferredAgeMax: null,
-            preferredLocationKM: null,
+            preferredLocationMI: null,
             long: null,
             dateLastLogin: null,
             name: user_info.name,
@@ -106,9 +131,9 @@ export default React.createClass({
 
     },
 
-    getPictureData: function() {
+    getPictureData() {
       // let x = this.state.fbID
-      var url = "http://172.24.128.164:3000/api/user/"+this.state.fbID.toString()+"/unseen"
+      var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/unseen"
       fetch(url, {method: "GET"})
       .then((response) => response.json())
       .then((responseData) => {
@@ -119,8 +144,8 @@ export default React.createClass({
 
     },
 
-    likePicture: function() {
-      fetch("http://172.24.128.164:3000/api/picture/newpictures", {
+    likePicture() {
+      fetch("http://192.168.43.88:3000/api/picture/newpictures", {
         method: "POST",
         headers: {
         'Accept': 'application/json',
@@ -134,8 +159,9 @@ export default React.createClass({
       })
       .done();
     },
-    dislikePicture: function() {
-      fetch("http://172.24.128.164:3000/api/picture/newpictures", {
+
+    dislikePicture() {
+      fetch("http://192.168.43.88:3000/api/picture/newpictures", {
         method: "POST",
         headers: {
         'Accept': 'application/json',
@@ -149,9 +175,10 @@ export default React.createClass({
       })
       .done();
     },
-    newMatches: function() {
+
+    newMatches() {
       // let x = this.state.fbID
-      var url = "http://172.24.128.164:3000/api/user/"+this.state.fbID.toString()+"/newmatches"
+      var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/newmatches"
       fetch(url, {method: "GET"})
       .then((response) => response.json())
       .then((responseData) => {
@@ -173,8 +200,26 @@ export default React.createClass({
       this.newMatches()
   },
 
+  //
+  // renderScene(route, navigator) {
+  //   if(route.name == 'Profile') {
+  //       <TouchableHighlight onPress={ () => this.props.navigator.pop() }>
+  //         <Text style={styles.textcontainer}>GO To Home</Text>
+  //       </TouchableHighlight>
+  //
+  //     return <ProfilePage navigator={navigator} />
+  //   }
+  //   if(route.name == 'Launch') {
+  //     return <Launch navigator={navigator} />
+  //   }
+  // },
+
 
   render() {
+    // const routes = [
+    //   {name: 'Launch', index: 0},
+    //   {name: 'Profile', index: 1},
+    // ];
 
     return <ScrollableTabView
       style={styles.container}
@@ -203,21 +248,24 @@ export default React.createClass({
         <View style={styles.textcontainer}>
         <Text style={styles.text}>Your Matches!</Text>
         </View>
-
           <MatchesPage />
       </ScrollView>
 
 
       <ScrollView tabLabel="account-box">
-      <View style={styles.innercontainer}>
-        <ProfilePage />
-        <FBLogin />
-        </View>
+        <View style={styles.textcontainer}>
+          <TouchableHighlight onPress={ () => this.props.navigator.push({  name: 'Profile'}) }>
+            <Text style={styles.text}>EDIT PROFILE</Text>
+          </TouchableHighlight>
+          </View>
+            <DisplayUserPage />
       </ScrollView>
 
 
+
+
     </ScrollableTabView>;
-  },
+  }
 });
 
 
@@ -242,10 +290,10 @@ const styles = StyleSheet.create({
     // flex: 1,
     paddingTop: 80,
     paddingBottom: 10,
-    fontSize: 22,
-    fontWeight: '500',
+    // fontSize: 22,
+    // fontWeight: '500',
     alignItems: 'center',
-    textAlign: 'center',
+    // textAlign: 'center',
     backgroundColor: 'rgba(200, 200, 200, 0.43)',
 
   },

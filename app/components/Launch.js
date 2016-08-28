@@ -1,6 +1,6 @@
 'use strict';
 import React from 'react';
-import {View, Alert, Text, StyleSheet, TextInput, Image, AsyncStorage, Icon} from "react-native";
+import {View, Alert, Text, StyleSheet, TextInput, Image, Navigator, AsyncStorage, Icon} from "react-native";
 import {
   Scene,
   Router,
@@ -13,48 +13,82 @@ import {
 } from 'react-native-router-flux'
 // var FBLoginMock = require('./FBLoginMock');
 import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
-import Home from './Home';
+import MainApp from './Home';
 import Button from "react-native-button";
 
 
 var TabView = require('./TabView');
 var TabIcon = require('./TabIcon');
 
-var FB_PHOTO_WIDTH = 200;
+var FB_PHOTO_WIDTH = 900;
 var Dimensions = require('Dimensions');
 var windowSize = Dimensions.get('window');
 
 
-const reducerCreate = params=>{
-    const defaultReducer = Reducer(params);
-    return (state, action)=>{
-        console.log("ACTION:", action);
-        return defaultReducer(state, action);
-    }
-};
-
-const scenes = Actions.create(
-  <Scene key="root">
-    <Scene key="home" component={Home} hideNavBar={true}/>
-  </Scene>
-);
+// const reducerCreate = params=>{
+//     const defaultReducer = Reducer(params);
+//     return (state, action)=>{
+//         console.log("ACTION:", action);
+//         return defaultReducer(state, action);
+//     }
+// };
+//
+// const scenes = Actions.create(
+//   <Scene key="root">
+//     <Scene key="home" component={Home} hideNavBar={true}/>
+//   </Scene>
+// );
 
 var Launch = React.createClass({
  getInitialState(){
     return {
       user: null,
+      initialPosition: 'unknown',
+      lastPosition: 'unknown',
+      lat: '',
+      long: ''
     };
   },
+
+  componentWillMount() {
+
+     navigator.geolocation.getCurrentPosition(
+      (position) => {
+        this.setState({lat: JSON.stringify(position.coords.latitude), long: JSON.stringify(position.coords.longitude)})
+      },
+      (error) => alert(error.message),
+      {enableHighAccuracy: true, timeout: 10000, maximumAge: 1000}
+    );
+  },
+
+  // renderScene(route, navigator) {
+  //    return <MainApp navigator={navigator} />
+  // },
+
+  // render() {
+  //   const routes = [
+  //     {name: 'FBLogin', index: 0},
+  //     {name: 'MainApp', index: 1},
+  //   ];
+  //   return (
+  //     <Navigator
+  //       initialRoute={routes[0]}
+  //       renderScene = {this.renderScene} />
+  //   );
+  // }
 
   render() {
     var _this = this;
     var user = this.state.user;
 
-    if(this.state.user) {
-        var info = this.state.info;
-          return <Router scenes={scenes}/>
-
-    } else {
+    // if(this.state.user) {
+    //     var info = this.state.info;
+    //     return (
+    //       // <Navigator
+    //       //   renderScene = {this.renderScene}/>
+    //
+    //     )
+    // } else {
       return (
       <View style={styles.container}>
         <Image style={styles.bg} source={{uri: 'https://scontent-sea1-1.xx.fbcdn.net/t31.0-8/13323231_10207167534975001_2138488519942298615_o.jpg'}} />
@@ -71,21 +105,29 @@ var Launch = React.createClass({
           <Text style={styles.greyFont}>By continuing, you agree to our <Text style={styles.whiteFont}>Terms of Service</Text> and <Text style={styles.whiteFont}>Privacy policy</Text></Text>
         </View>
 
-
         <FBLogin style={styles.loginbutton}
           permissions={["email","public_profile"]}
-          onLogin={function(data){
+          onLogin={(data) => {
+             this.props.navigator.push({
+                 name: 'Main',
+             });
+
             console.log("Logged in!");
             console.log(data);
             _this.setState({ user : data.credentials });
           }}
-          onLogout={function(){
-            console.log("Logged out.");
-            _this.setState({ user : null });
-          }}
-          onLoginFound={function(data){
+          // onLogout={() => {
+          //   console.log("Logged out.");
+          //   _this.setState({ user : null });
+          //   Alert.alert("Logged out")
+          //   return <Router scenes={scenes}/>
+          // }}
+          onLoginFound={(data) => {
+               this.props.navigator.push({
+                   name: 'Main',
+               });
 
-            var api = `https://graph.facebook.com/v2.3/${data.credentials.userId}/picture?width=${FB_PHOTO_WIDTH}&redirect=false&access_token=${data.credentials.token}`;
+            var api = `https://graph.facebook.com/v2.7/${data.credentials.userId}/picture?width=${FB_PHOTO_WIDTH}&redirect=false&access_token=${data.credentials.token}`;
 
             fetch(api)
               .then((response) => response.json())
@@ -94,13 +136,14 @@ var Launch = React.createClass({
               })
               .done();
 
-            var api = `https://graph.facebook.com/v2.3/${data.credentials.userId}?fields=id,name,age_range,gender&access_token=${data.credentials.token}`;
+            var api = `https://graph.facebook.com/v2.7/${data.credentials.userId}?fields=id,name,age_range,gender&access_token=${data.credentials.token}`;
 
             fetch(api)
               .then((response) => response.json())
               .then((responseData) => {
                 AsyncStorage.getItem("picture").then((value) => {
                   let obj = {}
+
                   obj["pic"] = value;
                   obj["id"] = responseData.id;
                   obj["name"] = responseData.name;
@@ -117,127 +160,31 @@ var Launch = React.createClass({
             console.log(data.credentials.token);
 
             _this.setState({ user : data.credentials.userId });
+
+
           }}
-          onLoginNotFound={function(){
+          onLoginNotFound={()=>{
             console.log("No user logged in.");
             _this.setState({ user : null });
           }}
-          onError={function(data){
+          onError={(data)=>{
             console.log("ERROR");
             console.log(data);
           }}
-          onCancel={function(){
+          onCancel={()=>{
             console.log("User cancelled.");
           }}
-          onPermissionsMissing={function(data){
+          onPermissionsMissing={(data)=>{
             console.log("Check permissions!");
             console.log(data);
           }}
         />
       </View>
     )
-    }
+    // }
   }
 });
 
-
-
-//
-// var Photo = React.createClass({
-//   propTypes: {
-//     user: React.PropTypes.object.isRequired,
-//   },
-//
-//   getInitialState: function(){
-//     return {
-//       photo: null,
-//     };
-//   },
-//
-//   componentWillMount: function(){
-//     var _this = this;
-//     var user = this.props.user;
-//     var api = `https://graph.facebook.com/v2.3/${user.userId}/picture?width=${FB_PHOTO_WIDTH}&redirect=false&access_token=${user.token}`;
-//
-//     fetch(api)
-//       .then((response) => response.json())
-//       .then((responseData) => {
-//         _this.setState({
-//           photo : {
-//             url : responseData.data.url,
-//             height: responseData.data.height,
-//             width: responseData.data.width,
-//           },
-//         });
-//       })
-//       .done();
-//   },
-//
-//   render(){
-//     if(this.state.photo == null) return this.renderLoading();
-//
-//     var photo = this.state.photo;
-//
-//     return (
-//       <View style={styles.bottomBump}/>
-//     );
-//   },
-//   renderLoading: function(){
-//     return (
-//       <View>
-//         <Text>Loading...</Text>
-//       </View>
-//     );
-//   }
-// });
-
-//
-// var Info = React.createClass({
-//   propTypes: {
-//     user: React.PropTypes.object.isRequired,
-//   },
-//
-//   getInitialState: function(){
-//     return {
-//       info: null,
-//     };
-//   },
-//
-//   componentWillMount: function(){
-//     var _this = this;
-//     var user = this.props.user;
-//
-//       fetch("http://172.24.128.164:3000/api/user/", {
-//         method: "POST",
-//         headers: {
-//         'Accept': 'application/json',
-//         'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({
-//           birthday: this.state.info.birthday,
-//           dateJoined: null,
-//           description: null,
-//           photo: this.state.info.photo,
-//           gender: this.state.info.gender,
-//           preferredAgeMax: null,
-//           preferredLocationKM: null,
-//           long: null,
-//           dateLastLogin: null,
-//           name: this.state.info.name,
-//           fbID: this.state.info.id,
-//           preferredAgeMin: null,
-//           lat: null,
-//           age: this.state.info.age
-//         })
-//       })
-//       .done();
-//     },
-//
-//   render(){
-//   }
-// });
-//
-//
 
 var styles = StyleSheet.create({
     loginContainer: {

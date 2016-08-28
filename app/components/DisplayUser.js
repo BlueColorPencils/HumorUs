@@ -20,8 +20,7 @@ import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
 import TimerMixin from 'react-timer-mixin';
 
 import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
-// import NavigatorTabBar from './NavigatorTabBar';
-// import MatchesPage from './Matches';
+
 import Icon from 'react-native-vector-icons/Ionicons';
 import SwipeCards from 'react-native-swipe-cards';
 
@@ -29,21 +28,9 @@ import { Form, InputField, LinkField, Separator } from 'react-native-form-genera
 
 var Dimensions = require('Dimensions');
 var windowSize = Dimensions.get('window');
-//
-// let Card = React.createClass({
-//   render() {
-//     const IMAGE_URL = this.props.image
-//     return (
-//       <View style={styles.card}>
-//         <Text style={styles.text}>{this.props.name}</Text>
-//         <Image style={styles.thumbnail} source={{uri:IMAGE_URL}} />
-//       </View>
-//     )
-//   }
-// })
 
 
-var ProfilePage = React.createClass({
+var UserPage = React.createClass({
     mixins: [TimerMixin],
 
      getInitialState() {
@@ -79,6 +66,7 @@ var ProfilePage = React.createClass({
               birthday: responseData.birthday,
               education: responseData.education,
               gender: responseData.gender,
+              gender: responseData.gender,
               description: responseData.description,
               preferredAgeMax: responseData.preferredAgeMax,
               photo: responseData.photo,
@@ -96,31 +84,8 @@ var ProfilePage = React.createClass({
       //  this.setTimeout(() => {
       //   this.setUserData() },400
       // );
-    },
-     _handleFormChange(formData) {
-        this.state.birthday = formData.birthday;
-        this.state.gender = formData.gender;
-        this.state.description = formData.description;
-    },
+    }
 
-    _handleSubmit() {
-        this.props.handleSubmit(this._input);
-    },
-        _openTermsAndConditions() {},
-
-
-    // getPictureData: function() {
-    //   // let x = this.state.fbID
-    //   var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/unseen"
-    //   fetch(url, {method: "GET"})
-    //   .then((response) => response.json())
-    //   .then((responseData) => {
-    //       this.setState({"cards": [{name: responseData.title, image: responseData.link}]});
-    //       this.setState({"imgurID": responseData.imgurID})
-    //   })
-    //   .done();
-    //
-    // },
 
   render() {
     return(
@@ -130,16 +95,15 @@ var ProfilePage = React.createClass({
             style={styles.profilepicture}/>
 
           <Text>{this.state.name}</Text>
-          <View style={styles.formcontainer}>
-          <Form ref='logInForm' label="Information" onChange={this._handleFormChange.bind(this)}>
-                    <Separator label='Birthday'/>
-                    <InputField ref='birthday' placeholder='hi'
-                     value='' autoCapitalize='none' autoCorrect={false}/>
+          <Separator label='Birthday'/>
+           <Text>{this.state.age}</Text>
+          <Separator label='Gender'/>
+          <Text>{this.state.gender} </Text>
+          <Separator label='Preferred Gender'/>
+          <Text>{this.state.preferredGender} </Text>
 
-                    <Separator label='Gender'/>
-                    <InputField ref='gender' placeholder={this.state.gender} value='' autoCapitalize='none' autoCorrect={false}  keyboardType='email-address'/>
-
-                    <Separator label='About Me'/>
+          <Separator label='About Me'/>
+          <Text>{this.state.description}
                     <InputField ref='description' placeholder={this.state.description} value='' secureTextEntry={true}/>
 
 
@@ -251,4 +215,4 @@ const styles = StyleSheet.create({
     }
 });
 
-module.exports = ProfilePage;
+module.exports = UserPage;

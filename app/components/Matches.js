@@ -9,6 +9,7 @@ import {
   Text,
   AsyncStorage,
   View,
+  Alert
 } from 'react-native';
 
 import GridView from 'react-native-grid-view'
@@ -41,8 +42,7 @@ var User = React.createClass({
 var UsersList = React.createClass({
       mixins: [TimerMixin],
 
-  getInitialState: function() {
-
+  getInitialState() {
     return {
       matches: null,
       fbID: '',
@@ -61,7 +61,7 @@ var UsersList = React.createClass({
   },
 
   fetchData() {
-    var url = "http://172.24.128.164:3000/api/user/"+this.state.fbID.toString()+"/matches"
+    var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/matches"
     fetch(url, {method: "GET"})
     .then((response) => response.json())
     .then((responseData) => {
@@ -96,8 +96,8 @@ var styles = StyleSheet.create({
   },
   title: {
     paddingTop: 8,
-    fontSize: 14,
-    fontWeight: '500',
+    // fontSize: 14,
+    // fontWeight: '500',
     marginBottom: 2,
     width: 110,
     textAlign: 'center',

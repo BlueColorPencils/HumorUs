@@ -56,50 +56,7 @@ const FacebookTabBar = React.createClass({
       {this.props.tabs.map((tab, i) => {
         return <TouchableOpacity key={tab} onPress=
         { () =>
-          {this.props.goToPage(i)
-      //     if (i=== 0) {
-      //       fetch("http://172.24.128.164:3000/api/user/tttttt/unseen", {method: "GET"})
-      //       .then((response) => response.json())
-      //       .then((responseData) => {
-      //
-      //         Alert.alert(
-      //           "GET Response",
-      //           "Search Query -> " + JSON.stringify(responseData)
-      //         )
-      //       })
-      //       .done();
-      //       this.props.goToPage(i)
-      //
-      //   }
-      //   else  if (i === 1){
-      //     fetch("http://172.24.128.164:3000/api/user/tttttt/matches", {method: "GET"})
-      //     .then((response) => response.json())
-      //     .then((responseData) => {
-      //       //  AsyncStorage.setItem("myKey", responseData);
-      //       //   this.setState({"myKey": JSON.stringify(responseData)});
-      //       //   <Text>"WAT"</Text>
-      //         Alert.alert(
-      //           "GET Response",
-      //           "Search Query -> " + JSON.stringify(responseData)
-      //         )
-      //     })
-      //     .done();
-      //     this.props.goToPage(i)
-      //   }
-      //   else  if (i === 2){
-      //     fetch("http://172.24.128.164:3000/api/user/tttttt/", {method: "GET"})
-      //     .then((response) => response.json())
-      //     .then((responseData) => {
-      //         Alert.alert(
-      //           "GET Response",
-      //           "Search Query -> " + JSON.stringify(responseData)
-      //         )
-      //     })
-      //     .done();
-      //     this.props.goToPage(i)
-      // }
-    }
-
+          {this.props.goToPage(i)}
         } style={styles.tab} >
           <Icon
             name={tab}
