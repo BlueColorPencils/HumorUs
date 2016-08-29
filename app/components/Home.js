@@ -76,7 +76,6 @@ export default React.createClass({
     },
 
     componentWillMount() {
-
       AsyncStorage.getItem("user").then((value) => {
         let user_info = JSON.parse(value)
         // Alert.alert(JSON.parse(value).id)
@@ -123,7 +122,6 @@ export default React.createClass({
           this.setState({"imgurID": responseData.imgurID})
       })
       .done();
-
     },
 
     likePicture() {
@@ -183,10 +181,6 @@ export default React.createClass({
   },
 
   render() {
-    // const routes = [
-    //   {name: 'Launch', index: 0},
-    //   {name: 'Profile', index: 1},
-    // ];
 
     return <ScrollableTabView
       style={styles.container}
@@ -296,12 +290,13 @@ const styles = StyleSheet.create({
     resizeMode:'contain'
   },
   text: {
-    fontSize: 17,
+    fontSize: 18,
     fontFamily: 'sans-serif-condensed',
     fontWeight: '400',
     color: 'rgb(50, 50, 50)',
     paddingTop: 0,
     paddingLeft: 10,
+    paddingRight: 10,
     paddingBottom: 10,
     // textAlign: 'center',
   },

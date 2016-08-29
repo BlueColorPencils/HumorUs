@@ -26,22 +26,10 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import SwipeCards from 'react-native-swipe-cards';
 
 import { Form, InputField, LinkField, Separator } from 'react-native-form-generator';
+var {GiftedForm, GiftedFormManager} = require('react-native-gifted-form');
 
 var Dimensions = require('Dimensions');
 var windowSize = Dimensions.get('window');
-//
-// let Card = React.createClass({
-//   render() {
-//     const IMAGE_URL = this.props.image
-//     return (
-//       <View style={styles.card}>
-//         <Text style={styles.text}>{this.props.name}</Text>
-//         <Image style={styles.thumbnail} source={{uri:IMAGE_URL}} />
-//       </View>
-//     )
-//   }
-// })
-
 
 var ProfilePage = React.createClass({
     mixins: [TimerMixin],
@@ -60,7 +48,8 @@ var ProfilePage = React.createClass({
         lat: '',
         long: '',
         gender: '',
-        age: ''
+        age: '',
+        formData: {}
       };
     },
 
@@ -104,49 +93,40 @@ var ProfilePage = React.createClass({
     },
 
     _handleSubmit() {
-        this.props.handleSubmit(this._input);
+        this.props.navigator.pop()
     },
-        _openTermsAndConditions() {},
 
-
-    // getPictureData: function() {
-    //   // let x = this.state.fbID
-    //   var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/unseen"
-    //   fetch(url, {method: "GET"})
-    //   .then((response) => response.json())
-    //   .then((responseData) => {
-    //       this.setState({"cards": [{name: responseData.title, image: responseData.link}]});
-    //       this.setState({"imgurID": responseData.imgurID})
-    //   })
-    //   .done();
-    //
-    // },
 
   render() {
     return(
       <ScrollView>
-      <View style={styles.profilecontainer}>
+          <View style={styles.topnavbar}>
+            <TouchableHighlight
+              onPress={this._handleSubmit} style={styles.btnClickContain}
+              underlayColor='transparent'>
+              <View style={styles.btnContainer}>
+                <Icon
+                  name='ios-arrow-back'
+                  size={30}
+                  // color='#042'
+                  style={styles.btnIcon}/>
+                <Text style={styles.btnText}>Profile</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+
+
+          <View style={styles.profilecontainer}>
           <Image
-            source={{uri: this.state.photo}}
+            source={{uri:this.state.photo}}
             style={styles.profilepicture}
           />
 
           <Text>{this.state.name}</Text>
+          </View>
 
           <View style={styles.formcontainer}>
-            <Form ref='logInForm' label="Information" onChange={this._handleFormChange.bind(this)}>
-              <Separator label='Birthday'/>
-              <InputField ref='birthday' placeholder='hi'
-               value='' autoCapitalize='none' autoCorrect={false}/>
-
-              <Separator label='Gender'/>
-              <InputField ref='gender' placeholder={this.state.gender} value='' autoCapitalize='none' autoCorrect={false}  keyboardType='email-address'/>
-
-              <Separator label='About Me'/>
-              <InputField ref='description' placeholder={this.state.description} value='' secureTextEntry={true}/>
-            </Form>
-
-
+            
             <FBLogin
               onLogout={() => {
                 this.props.navigator.push({
@@ -155,13 +135,8 @@ var ProfilePage = React.createClass({
               }}
             />
 
-            <Button containerStyle={styles.buttonContainer} onPress={this._handleSubmit}>
-              <Text style={styles.button} allowFontScaling={false}>
-                  Save
-              </Text>
-            </Button>
 
-          </View>
+
         </View>
       </ScrollView>
     )
@@ -173,25 +148,16 @@ const styles = StyleSheet.create({
   profilecontainer: {
     // marginTop: 70,
     flex: 1,
+    flexDirection: 'row',
     position: 'relative',
     top: 0,
     // height: windowSize.height-190,
     // alignItems: 'center',
-    // backgroundColor: 'rgba(200, 200, 200, 0.43)',
+    backgroundColor: 'rgba(200, 200, 200, 0.43)',
     // alignItems: 'center',
     // justifyContent: 'center',
   },
-  profiletext: {
-    // marginTop: 70,
-    flex: 1,
-    position: 'relative',
-    top: 0,
-    height: windowSize.height-190,
-    // alignItems: 'center',
-    // backgroundColor: 'rgba(200, 200, 200, 0.43)',
-    // alignItems: 'center',
-    // justifyContent: 'center',
-  },
+
   textcontainer: {
     // flex: 1,
     paddingTop: 80,
@@ -203,12 +169,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(200, 200, 200, 0.43)',
 
   },
-    formcontainer: {
-      // flex: 1,
-      // alignItems: 'left',
-      // textAlign: 'left',
-      // backgroundColor: 'rgba(200, 200, 200, 0.43)',
-
+    topnavbar: {
+      height: 65,
+      flexDirection: 'row',
+      // paddingTop: 15,
+      // paddingLeft: 10,
+      borderWidth: 1,
+      borderTopWidth: 0,
+      borderLeftWidth: 0,
+      borderRightWidth: 0,
+      backgroundColor: 'white',
+      borderBottomColor: 'rgba(0,0,0,0.4)'
+    },
+    topnavtext:{
+      fontSize: 20,
+      // paddingBottom: 5,
+      // marginLeft: 20
     },
   picturecontainer: {
     flex:1,
@@ -218,12 +194,46 @@ const styles = StyleSheet.create({
     // height: windowSize.height-150
   },
   profilepicture: {
-    width: 200,
-    height: 200,
+    marginTop: 50,
+    width: 150,
+    height: 150,
     borderRadius: 25,
     // resizeMode:'contain',
     // flex: 1,
     // alignItems: 'center',
+  },
+
+   btnClickContain: {
+    width: 140,
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    alignSelf: 'stretch',
+    // backgroundColor: '#853d3d',
+
+    paddingTop: 18,
+    // marginBottom: 5,
+  },
+  btnContainer: {
+    flex: 1,
+    // height: 60,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    alignSelf: 'stretch',
+    // borderRadius: 10,
+  },
+  btnIcon: {
+    height: 30,
+    width: 30,
+    // paddingBottom: 5,
+    // marginBottom: 5
+
+  },
+  btnText: {
+    fontSize: 20,
+    color: 'rgb(255, 17, 131)',
+    // paddingLeft: 5,
+    // marginTop: 2,
   },
   text: {
     fontSize: 17,
@@ -235,20 +245,20 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     // textAlign: 'center',
   },
-   buttonContainer: {
-      marginLeft: 16,
-      marginRight: 16,
-      marginTop: 20,
-      marginBottom: 20,
-      overflow: 'hidden',
-      borderRadius: 5,
-      padding: 10,
-      backgroundColor: 'lightslategrey'
-  },
-    button: {
-        textAlign: 'center',
-        color: '#fff'
-    }
+  //  buttonContainer: {
+  //     // marginLeft: 10,
+  //     marginRight: 16,
+  //     marginTop: 20,
+  //     marginBottom: 20,
+  //     overflow: 'hidden',
+  //     borderRadius: 5,
+  //     padding: 10,
+  //     backgroundColor: 'lightslategrey'
+  // },
+  //   button: {
+  //       textAlign: 'center',
+  //       color: '#fff'
+  //   }
 });
 
 module.exports = ProfilePage;

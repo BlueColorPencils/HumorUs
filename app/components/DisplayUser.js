@@ -31,67 +31,68 @@ var windowSize = Dimensions.get('window');
 
 
 var UserPage = React.createClass({
-    mixins: [TimerMixin],
+  mixins: [TimerMixin],
 
-     getInitialState() {
-      return {
-        fbID: '',
-        birthday: '',
-        education: '',
-        description: '',
-        preferredAgeMax: '',
-        photo: '',
-        preferredLocationMI: '',
-        name: '',
-        preferredAgeMin: '',
-        lat: '',
-        long: '',
-        gender: '',
-        age: ''
-      };
-    },
+   getInitialState() {
+    return {
+      fbID: '',
+      birthday: '',
+      education: '',
+      description: '',
+      preferredAgeMax: '',
+      photo: '',
+      preferredLocationMI: '',
+      name: '',
+      preferredAgeMin: '',
+      lat: '',
+      long: '',
+      gender: '',
+      age: ''
+    };
+  },
 
-    componentWillMount() {
+  componentWillMount() {
 
-      AsyncStorage.getItem("user").then((value) => {
-        let user_info = JSON.parse(value)
-        this.setState({"fbID": user_info.id})
-        let url = "http://192.168.43.88:3000/api/user/"+user_info.id
-        fetch(url, {method: "GET"})
-          .then((response) => response.json())
-          .then((responseData) => {
-            this.setState({
-              birthday: responseData.birthday,
-              education: responseData.education,
-              gender: responseData.gender,
-              gender: responseData.gender,
-              description: responseData.description,
-              preferredAgeMax: responseData.preferredAgeMax,
-              photo: responseData.photo,
-              preferredLocationMI: responseData.preferredLocationMI,
-              name: responseData.name,
-              preferredAgeMin: responseData.preferredAgeMin,
-              lat: responseData.lat,
-              long: responseData.long,
-              age: responseData.age
-            })
-          }).done();
+    AsyncStorage.getItem("user").then((value) => {
+      let user_info = JSON.parse(value)
+      this.setState({"fbID": user_info.id})
+      let url = "http://192.168.43.88:3000/api/user/"+user_info.id
+      fetch(url, {method: "GET"})
+        .then((response) => response.json())
+        .then((responseData) => {
+          this.setState({
+            birthday: responseData.birthday,
+            education: responseData.education,
+            gender: responseData.gender,
+            preferredGender: responseData.preferredGender,
+            description: responseData.description,
+            preferredAgeMax: responseData.preferredAgeMax,
+            photo: responseData.photo,
+            preferredLocationMI: responseData.preferredLocationMI,
+            name: responseData.name,
+            preferredAgeMin: responseData.preferredAgeMin,
+            lat: responseData.lat,
+            long: responseData.long,
+            age: responseData.age
+          })
         }).done();
-
-
-    }
+      }).done();
+  },
 
 
   render() {
     return(
       <ScrollView>
       <View style={styles.profilecontainer}>
-          <Image
-            source={{uri: this.state.photo}}
-            style={styles.profilepicture}/>
+        <Image
+          source={{uri:this.state.photo}}
+          style={styles.profilepicture}
+        />
 
-          <Text>{this.state.name}</Text>
+        <Text style={styles.rightcontainer}>{this.state.name}</Text>
+        </View>
 
+        <View>
           <Separator label='Birthday'/>
            <Text>{this.state.age}</Text>
 
@@ -114,8 +115,13 @@ var UserPage = React.createClass({
 const styles = StyleSheet.create({
   profilecontainer: {
     flex: 1,
+    flexDirection: 'row',
     position: 'relative',
     top: 0,
+    // height: windowSize.height-190,
+    // alignItems: 'center',
+    backgroundColor: 'rgba(200, 200, 200, 0.43)',
+    // alignItems: 'center',
   },
   profiletext: {
     flex: 1,
@@ -138,10 +144,18 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   profilepicture: {
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
     borderRadius: 25,
   },
+    rightcontainer: {
+      width: 200,
+      height: 200,
+      borderRadius: 25,
+      // resizeMode:'contain',
+      // flex: 1,
+      // alignItems: 'center',
+    },
   text: {
     fontSize: 17,
     fontFamily: 'sans-serif-condensed',

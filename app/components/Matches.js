@@ -14,6 +14,7 @@ import {
 
 import GridView from 'react-native-grid-view'
 import TimerMixin from 'react-timer-mixin';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 
 var Dimensions = require('Dimensions');
@@ -71,15 +72,19 @@ var UsersList = React.createClass({
   },
 
   render() {
-
+    if (this.state.matches && this.state.matches != null ) {
+      return (
+        <GridView
+          items={this.state.matches}
+          itemsPerRow={MOVIES_PER_ROW}
+          renderItem={this.renderItem}
+          style={styles.listView}
+        />
+      )
+    }
     return (
-      <GridView
-        items={this.state.matches}
-        itemsPerRow={MOVIES_PER_ROW}
-        renderItem={this.renderItem}
-        style={styles.listView}
-      />
-    );
+      <View><Spinner visible={true}/></View>
+    )
   },
 
   renderItem(item) {

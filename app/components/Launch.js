@@ -30,7 +30,7 @@ var Launch = React.createClass({
       (position) => {
         this.setState({lat: JSON.stringify(position.coords.latitude), long: JSON.stringify(position.coords.longitude)})
       },
-      (error) => alert(error.message),
+      (error) => error.message,
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
   },

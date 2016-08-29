@@ -78,9 +78,8 @@ const styles = StyleSheet.create({
     // paddingBottom: 10,
   },
   tabs: {
-    height: 70,
+    height: 65,
     flexDirection: 'row',
-    paddingTop: 5,
     borderWidth: 1,
     borderTopWidth: 0,
     borderLeftWidth: 0,
