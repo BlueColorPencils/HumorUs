@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   tabs: {
     height: 65,
     flexDirection: 'row',
-    borderWidth: 1,
+    borderWidth: 2,
     borderTopWidth: 0,
     borderLeftWidth: 0,
     borderRightWidth: 0,

@@ -70,6 +70,9 @@ class HumorUs extends Component {
       return (  <Navigator
         initialRoute={routes[this.state.num]}
         initialRouteStack={routes}
+       configureScene={() => {
+          return Navigator.SceneConfigs.FadeAndroid;
+        }}
         renderScene = {this.renderScene} />
       )
     // }

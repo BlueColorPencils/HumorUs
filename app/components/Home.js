@@ -182,9 +182,7 @@ export default React.createClass({
 
   render() {
 
-    return <ScrollableTabView
-      style={styles.container}
-      renderTabBar={()=><NavigatorTabBar backgroundColor='rgba(200, 200, 200, 0.43)' />}
+    return <ScrollableTabView renderTabBar={()=><NavigatorTabBar backgroundColor='rgba(200, 200, 200, 0.43)' />}
       tabBarPosition='overlayTop'
     >
 
@@ -214,12 +212,18 @@ export default React.createClass({
 
 
       <ScrollView tabLabel="account-box">
-        <View style={styles.textcontainer}>
-          <TouchableHighlight onPress={ () => this.props.navigator.push({  name: 'Profile'}) }>
-            <Text style={styles.text}>EDIT PROFILE</Text>
+        <View style={styles.container}>
+        <DisplayUserPage />
+          <TouchableHighlight style={styles.btnClickContain} underlayColor='transparent' onPress={ () => this.props.navigator.push({  name: 'Profile'})}>
+          <View style={styles.button}>
+          <Icon
+            name='md-settings'
+            size={20}
+            style={styles.btnIcon}/>
+          <Text style={styles.btnText}>Settings</Text>
+          </View>
           </TouchableHighlight>
           </View>
-            <DisplayUserPage />
       </ScrollView>
 
 
@@ -231,12 +235,20 @@ export default React.createClass({
 
 
 const styles = StyleSheet.create({
-  container: {
+  btnClickContain: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    alignSelf: 'stretch',
+    paddingTop: 18,
   },
-  icon: {
-    width: 300,
-    height: 300,
-    alignSelf: 'center',
+  btnIcon: {
+    // flex: 1,
+    color: 'rgb(50, 50, 50)',
+    paddingTop: 20,
+    paddingRight: 5
+  },
+  btnText: {
   },
   innercontainer: {
     // marginTop: 70,
@@ -247,12 +259,23 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     justifyContent: 'center',
   },
-  textcontainer: {
-    // flex: 1,
+  container: {
+    flex: 1,
     paddingTop: 80,
-    paddingBottom: 10,
+    paddingBottom: 120,
     // fontSize: 22,
-    // fontWeight: '500',
+    // height: windowSize.height-100,
+    alignItems: 'center',
+    // textAlign: 'center',
+    backgroundColor: 'rgba(200, 200, 200, 0.43)',
+
+  },
+  textcontainer: {
+    flex: 1,
+    paddingTop: 80,
+    paddingBottom: 20,
+    // fontSize: 22,
+    // height: windowSize.height-100,
     alignItems: 'center',
     // textAlign: 'center',
     backgroundColor: 'rgba(200, 200, 200, 0.43)',
@@ -304,5 +327,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  button: {
+    flex: 1,
+    // flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // alignSelf: 'stretch',
   }
 });
