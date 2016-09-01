@@ -7,9 +7,7 @@ import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
 import Button from "react-native-button";
 import Spinner from 'react-native-loading-spinner-overlay';
 
-//
-// var TabView = require('./TabView');
-// var TabIcon = require('./TabIcon');
+
 
 var FB_PHOTO_WIDTH = 900;
 var Dimensions = require('Dimensions');

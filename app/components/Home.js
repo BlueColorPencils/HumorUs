@@ -111,10 +111,10 @@ export default React.createClass({
       // {}, 350)
 
        this.setTimeout(() => {
-        this.getPictureData() },400
+        this.getPictureData() },300
       );
        this.setTimeout(() => {
-        this.userInfo() },300
+        this.userInfo() },200
       );
 
     },
@@ -124,10 +124,12 @@ export default React.createClass({
         console.log("USERINFO VALUE EXIST???", value)
         let n = JSON.parse(value)
         if (this.isMounted()) {
-          console.log("get fb value ughhhhhh", value)
+          console.log("get fb value ughhhhhh n ", n)
+          console.log("get fb value ughhhhhh n.name", n.name)
           this.setState({name: n.name, fbID: n.fbID})
+          // return n.name
         }
-      }).done();
+      }).done()
     },
 
     // async userfbID()
@@ -238,7 +240,7 @@ export default React.createClass({
 
       <ScrollView tabLabel="account-box">
         <View style={styles.container}>
-        <Text style={{fontSize: 17, fontWeight:'500', paddingTop: 10, paddingBottom: 20}}>{this.state.name}</Text>
+
         <DisplayUserPage />
           <TouchableHighlight style={styles.btnClickContain} underlayColor='transparent' onPress={ () => this.props.navigator.push({  name: 'Profile'})}>
           <View style={styles.button}>

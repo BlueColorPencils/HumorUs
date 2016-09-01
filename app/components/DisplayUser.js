@@ -41,25 +41,34 @@ var UserPage = React.createClass({
   },
 
   componentWillMount() {
-    AsyncStorage.getItem("userinfo").then((value) => {
-      let user_info = JSON.parse(value)
-      console.log("WTF?", user_info)
-      if (this.isMounted()) {
-        this.setState({photo: user_info.photo, name: user_info.name})
-      }
-    }).done();
+     this.setTimeout(() => {
+      this.setStateLater() },300
+    );
+
   },
 
+  setStateLater() {
+      AsyncStorage.getItem("userinfo").then((value) => {
+        let user_info = JSON.parse(value)
+        console.log("WTF?", user_info)
+        if (this.isMounted()) {
+          this.setState({photo: user_info.photo, name: user_info.name})
+        }
+      }).done();
+  },
 
   render() {
     return(
-
+      <View>
+        <Text style={{fontSize: 17, fontWeight:'500', paddingTop: 10, paddingBottom: 20, textAlign: 'center'}}>{this.state.name}
+        </Text>
       <View style={styles.profilecontainer}>
         <Image
           source={{uri:this.state.photo}}
           style={styles.profilepicture}
         />
 
+        </View>
         </View>
     )
   }
