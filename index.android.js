@@ -14,9 +14,10 @@ import {
 import Button from 'react-native-button'
 import TimerMixin from 'react-timer-mixin';
 
-import Main from './app/components/Home';
 import Profile from './app/components/Profile';
 import FBLogin from './app/components/Launch';
+import Main from './app/components/Home';
+// const Main = require('HomePage')
 
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -32,26 +33,32 @@ class HumorUs extends Component {
   }
 
   componentWillMount() {
-    AsyncStorage.getItem("user").then((value) => {
-      let info = (JSON.parse(value))
-      if(info.id && info.id !== '' ) {
+    // AsyncStorage.getItem("user").then((value) => {
+    // this.setState({ num: '0', persists: true });
+
+    AsyncStorage.getItem("loggedin").then((value) => {
+      console.log("value", value)
+      if (value === 'true') {
+        console.log("logged in")
         this.setState({ num: '1', persists: true });
-      }
-      else {
+      } else {
+        console.log("not logged in?")
         this.setState({ num: '0', persists: true });
       }
+
     }).done()
   }
 
   renderScene(route, navigator) {
+    console.log("ROUTE?", route)
     if(route.name == 'FBLogin') {
-    return <FBLogin navigator={navigator} />
+      return <FBLogin navigator={navigator} />
     }
-    if(route.name == 'Main') {
-    return <Main navigator={navigator} />
+    if(route.name === 'Main') {
+      return <Main navigator={navigator} />
     }
     if(route.name == 'Profile') {
-    return <Profile navigator={navigator} />
+      return <Profile navigator={navigator} />
     }
   }
 
@@ -69,7 +76,7 @@ class HumorUs extends Component {
 
       return (  <Navigator
         initialRoute={routes[this.state.num]}
-        initialRouteStack={routes}
+        // initialRouteStack={routes}
        configureScene={() => {
           return Navigator.SceneConfigs.FadeAndroid;
         }}
@@ -95,7 +102,7 @@ const styles = StyleSheet.create({
   instructions: {
     textAlign: 'center',
     color: '#333333',
-    marginBottom: 5,
+    marginBottom: 5
   },
 });
 

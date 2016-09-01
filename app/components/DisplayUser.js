@@ -41,9 +41,12 @@ var UserPage = React.createClass({
   },
 
   componentWillMount() {
-    AsyncStorage.getItem("user").then((value) => {
+    AsyncStorage.getItem("userinfo").then((value) => {
       let user_info = JSON.parse(value)
-      this.setState({"photo": user_info.photo, "name": user_info.name})
+      console.log("WTF?", user_info)
+      if (this.isMounted()) {
+        this.setState({photo: user_info.photo, name: user_info.name})
+      }
     }).done();
   },
 

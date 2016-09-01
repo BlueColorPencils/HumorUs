@@ -32,7 +32,7 @@ import Icons from 'react-native-vector-icons/MaterialIcons';
 import SwipeCards from 'react-native-swipe-cards';
 
 import { Form, InputField, LinkField, Separator } from 'react-native-form-generator';
-// var {GiftedForm, GiftedFormManager} = require('react-native-gifted-form');
+var {GiftedForm, GiftedFormManager} = require('react-native-gifted-form');
 
 var Dimensions = require('Dimensions');
 var windowSize = Dimensions.get('window');
@@ -63,14 +63,17 @@ var ProfilePage = React.createClass({
     },
 
     componentWillMount() {
-
-      AsyncStorage.getItem("user").then((value) => {
-        let user_info = JSON.parse(value)
-        this.setState({"fbID": user_info.id})
-        let url = "http://192.168.43.88:3000/api/user/"+user_info.id
+      console.log("profile thing is mounting")
+      AsyncStorage.getItem("fbID").then((value) => {
+        // let user_info = JSON.parse(value)
+        if (this.isMounted()) {
+          this.setState({"fbID": value})
+        }
+        let url = "http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/"+value
         fetch(url, {method: "GET"})
           .then((response) => response.json())
           .then((responseData) => {
+            if (this.isMounted()){
             this.setState({
               birthday: Number(responseData.birthday),
               gender: responseData.gender,
@@ -85,32 +88,42 @@ var ProfilePage = React.createClass({
               // long: responseData.long,
               age: responseData.age
             })
+          }
 
             if (!responseData.preferredLocationMI) {
-              this.setState({preferredLocationMI: 100})
+              if (this.isMounted()) {
+              this.setState({preferredLocationMI: 0})
+              }
             }
             if (!responseData.birthday) {
-              this.setState({birthday: 664444800000})
+              if (this.isMounted()) {
+                this.setState({birthday: 664444800000, datenum: 664444800000})
+              }
             } else {
               let date = new Date(Number(responseData.birthday))
               date = date.toString().slice(4,15)
-              this.setState({date: date, datenum: Number(responseData.birthday)})
+              if (this.isMounted()){
+                this.setState({date: date, datenum: Number(responseData.birthday)})
+              }
             }
-          }).done();
-        }).done();
 
+          }).done()
+
+        }).done()
     },
      _handleFormChange(formData) {
         // this.state.birthday = formData.birthday;
         // this.state.gender = formData.gender;
         // this.state.description = formData.description;
 
-      this.setState({formData:formData})
+      if (this.isMounted()){
+        this.setState({formData:formData})
+      }
       this.props.onFormChange && this.props.onFormChange(formData);
     },
 
     _handleSubmit() {
-      fetch("http://192.168.43.88:3000/api/user/update", {
+      fetch("http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/update", {
         method: "POST",
         headers: {
         'Accept': 'application/json',
@@ -132,29 +145,41 @@ var ProfilePage = React.createClass({
 
     _handleGender(gender) {
       var genderArr = this.state.gender
-      let index = genderArr.indexOf(gender)
+      if (genderArr) {
+        let index = genderArr.indexOf(gender)
 
-      if (index !== -1 && gender && gender != "") {
-        genderArr.splice(index-1, 2)
-        this.setState({gender: genderArr})
-      } else if (gender!== "") {
-        genderArr.push(" ")
-        genderArr.push(gender)
-        this.setState({gender: genderArr})
+        if (index !== -1 && gender && gender != "") {
+          genderArr.splice(index-1, 2)
+          if (this.isMounted()){
+            this.setState({gender: genderArr})
+          }
+        } else if (gender!== "") {
+          genderArr.push(" ")
+          genderArr.push(gender)
+          if (this.isMounted()){
+            this.setState({gender: genderArr})
+          }
+        }
       }
     },
 
     _handlePreferredGender(gender) {
       var genderPrefArr = this.state.preferredGender
-      let index = genderPrefArr.indexOf(gender)
+      if (genderPrefArr) {
+        let index = genderPrefArr.indexOf(gender)
 
-      if (index !== -1 && gender && gender!== "") {
-        genderPrefArr.splice(index-1, 2)
-        this.setState({preferredGender: genderPrefArr})
-      } else if (gender!== "") {
-        genderPrefArr.push(" ")
-        genderPrefArr.push(gender)
-        this.setState({preferredGender: genderPrefArr})
+        if (index !== -1 && gender && gender!== "") {
+          genderPrefArr.splice(index-1, 2)
+          if (this.isMounted()){
+            this.setState({preferredGender: genderPrefArr})
+          }
+        } else if (gender!== "") {
+          genderPrefArr.push(" ")
+          genderPrefArr.push(gender)
+          if (this.isMounted()){
+            this.setState({preferredGender: genderPrefArr})
+          }
+        }
       }
     },
     async showPicker(stateKey, options) {
@@ -172,7 +197,9 @@ var ProfilePage = React.createClass({
           let datenum = Number(date)
           let datestr = datenum.toString()
           let datefinal = datestring.slice(4,15)
-          this.setState({birthday: datenum, date: datefinal, datenum: datenum});
+          if (this.isMounted()){
+            this.setState({birthday: datenum, date: datefinal, datenum: datenum});
+          }
         }
         // Alert.alert(JSON.stringify(newState))
       } catch ({code, message}) {
@@ -183,6 +210,7 @@ var ProfilePage = React.createClass({
   render() {
 
     return(
+
       <View style={{flex: 1}}>
         <View style={styles.topnavbar}>
           <TouchableHighlight
@@ -235,7 +263,7 @@ var ProfilePage = React.createClass({
               <Text style={styles.separatortext}>About Me</Text>
             </View>
 
-            <TextInput defaultValue={this.state.description} maxNumberOfLines={5} multiline numberOfLines={5} onChangeText={(text) => this.setState({description: text})} underlineColorAndroid='rgba(0,0,0,0)' style={styles.textInput}/>
+            <TextInput defaultValue={this.state.description} maxNumberOfLines={5} multiline numberOfLines={5} onChangeText={(text) => this.setState({description: text})} underlineColorAndroid='rgba(0,0,0,0)' placeholder='Tell us something about you. Humor us! :)'     placeholderTextColor="#bebebe" style={styles.textInput}/>
 
             <View style={styles.separatornormal}>
               <Text style={styles.separatortext}>Birthday</Text>
@@ -297,6 +325,8 @@ var ProfilePage = React.createClass({
               <Picker.Item label="Two-Spirit" value="Two-spirit" />
             </Picker>
 
+            <Text style={styles.helpertext}>Add genders by selecting each one. Remove a gender by selecting it again.</Text>
+
             <View style={styles.separatornormal}>
               <Text style={styles.separatortext}>Interested In</Text>
               <Text style={styles.gendertext}>{this.state.preferredGender}</Text>
@@ -357,8 +387,8 @@ var ProfilePage = React.createClass({
             </View>
 
 
-            <Slider minimumTrackTintColor='#ff1183' style={styles.slider} minimumValue={0} maximumValue={100} value={this.state.preferredLocationMI}  onValueChange={(value) => this.setState({preferredLocationMI: Math.round(value)})} />
-
+            <Slider minimumTrackTintColor='#ff1183' style={styles.slider} minimumValue={0} maximumValue={100} value={this.state.preferredLocationMI} onValueChange={(value) => this.setState({preferredLocationMI: Math.round(value)})} />
+            <Text style={styles.helpertext}>A search distance of 0 has no limits. The world is your oyster.</Text>
             <View style={styles.separatornormal}>
               <Text style={styles.separatortext}>Age Minimum</Text>
               <Text style={styles.separatortext}>{this.state.preferredAgeMin}</Text>
@@ -375,9 +405,13 @@ var ProfilePage = React.createClass({
 
             <View style={styles.bottom}>
             </View>
+              <Text style={styles.helpertext}>HumorUs Version(0.0.1)[Beta]</Text>
 
             <FBLogin
               onLogout={() => {
+                AsyncStorage.setItem("loggedin", 'false')
+                AsyncStorage.setItem("userinfo", null)
+                AsyncStorage.setItem("picture", null)
                 this.props.navigator.push({
                     name: 'FBLogin',
                 });
@@ -406,6 +440,14 @@ const styles = StyleSheet.create({
   topnavtext:{
     fontSize: 20,
 
+  },
+  helpertext:{
+    fontSize: 10,
+    color:'rgb(175, 175, 175)',
+    textAlign: 'center',
+    backgroundColor: 'rgba(200, 200, 200, 0.43)',
+    paddingTop:5,
+    paddingBottom:5
   },
   bottom:{
     backgroundColor: 'rgba(200, 200, 200, 0.43)',

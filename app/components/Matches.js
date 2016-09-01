@@ -51,9 +51,9 @@ var UsersList = React.createClass({
   },
 
   componentWillMount() {
-    AsyncStorage.getItem("user").then((value) => {
+    AsyncStorage.getItem("userinfo").then((value) => {
       let user_info = JSON.parse(value)
-      this.setState({"fbID": user_info.id})
+      this.setState({"fbID": user_info.fbID})
     }).done();
 
      this.setTimeout(() => {
@@ -62,17 +62,21 @@ var UsersList = React.createClass({
   },
 
   fetchData() {
-    var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/matches"
+    var url = "http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/"+this.state.fbID+"/matches"
     fetch(url, {method: "GET"})
     .then((response) => response.json())
     .then((responseData) => {
-      this.setState({"matches": JSON.parse(JSON.stringify(responseData))});
+      if (responseData.error){
+        this.setState({matches: false})
+      } else {
+        this.setState({matches: JSON.parse(JSON.stringify(responseData))});
+      }
     })
     .done();
   },
 
   render() {
-    if (this.state.matches && this.state.matches != null ) {
+    if (this.state.matches && this.state.matches != null && this.state.matches != false) {
       return (
         <GridView
           items={this.state.matches}
@@ -81,10 +85,17 @@ var UsersList = React.createClass({
           style={styles.listView}
         />
       )
+    } else if (!this.state.matches) {
+      return (
+        <View style={styles.nomatchesView}>
+          <Text style={{fontSize: 60, textAlign: 'center', paddingTop:100, paddingBottom: 20}}>😭</Text>
+          <Text style={styles.noMatches}>No matches.</Text>
+          <Text style={styles.noMatches}>Keep swiping!</Text></View>
+      )
     }
     return (
       <View><Spinner visible={true}/></View>
-    )
+      )
   },
 
   renderItem(item) {
@@ -98,6 +109,12 @@ var styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     flexDirection: 'column',
+  },
+  noMatches:{
+    fontSize: 16,
+    fontWeight: '400',
+    textAlign: 'center',
+    paddingTop: 5
   },
   title: {
     paddingTop: 8,
@@ -120,6 +137,10 @@ var styles = StyleSheet.create({
     height: windowSize.height-10,
     backgroundColor: 'rgba(200, 200, 200, 0.43)',
   },
+  nomatchesView: {
+    height: windowSize.height-150,
+    backgroundColor: 'rgba(200, 200, 200, 0.43)',
+  }
 });
 
 module.exports = UsersList;

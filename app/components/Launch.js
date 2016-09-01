@@ -3,8 +3,9 @@ import React from 'react';
 import {View, Alert, Text, StyleSheet, TextInput, Image, Navigator, AsyncStorage, Icon} from "react-native";
 
 import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
-import MainApp from './Home';
+// import MainApp from './Home';
 import Button from "react-native-button";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 //
 // var TabView = require('./TabView');
@@ -21,21 +22,39 @@ var Launch = React.createClass({
       initialPosition: 'unknown',
       lastPosition: 'unknown',
       lat: '',
-      long: ''
+      long:'',
+      fbID: '',
+      loggedin: ''
     };
   },
 
   componentWillMount() {
      navigator.geolocation.getCurrentPosition(
       (position) => {
+        console.log("GEO?!?!", position)
         this.setState({lat: JSON.stringify(position.coords.latitude), long: JSON.stringify(position.coords.longitude)})
+        fetch("http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/updateloc", {
+          method: "POST",
+          headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            fbID: this.state.fbID,
+            lat: position.coords.latitude,
+            long: position.coords.longitude
+          })
+        })
+        .done();
       },
       (error) => error.message,
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
+    // this.geoLocation()
   },
 
   render() {
+
     var _this = this;
     var user = this.state.user;
 
@@ -57,23 +76,91 @@ var Launch = React.createClass({
 
       <FBLogin style={styles.loginbutton}
         permissions={["email","public_profile"]}
-        onLogin={(data) => {
-           this.props.navigator.push({
-               name: 'Main',
-           });
 
-          console.log("Logged in!");
-          console.log(data);
+        onLogin={(data) => {
+
+          AsyncStorage.setItem("fbID", data.credentials.userId)
+          _this.setState({fbID: data.credentials.userId})
+          console.log("fbID datacredentials?", data.credentials.userId)
+
+          var api = `https://graph.facebook.com/v2.7/${data.credentials.userId}/picture?width=${FB_PHOTO_WIDTH}&redirect=false&access_token=${data.credentials.token}`;
+
+          fetch(api)
+            .then((response) => response.json())
+            .then((responseData) => {
+              console.log("picturedata", responseData.data.url)
+              AsyncStorage.setItem("picture", responseData.data.url)
+            })
+          .done();
+
+          var api = `https://graph.facebook.com/v2.7/${data.credentials.userId}?fields=id,name,age_range,gender&access_token=${data.credentials.token}`;
+
+          fetch(api)
+            .then((response) => response.json())
+            .then((responseData) => {
+              AsyncStorage.getItem("picture").then((value) => {
+                console.log("getitem picutre meow", value)
+                AsyncStorage.setItem("signin", 'true')
+
+                fetch("http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/", {
+                  method: "POST",
+                  headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    birthday: null,
+                    description: null,
+                    photo: value,
+                    gender: [responseData.gender],
+                    preferredAgeMax: null,
+                    long: null,
+                    name: responseData.name,
+                    fbID: responseData.id,
+                    preferredAgeMin: null,
+                    lat: null,
+                    age: responseData.age_range.min
+                  })
+                }).done()
+              }).done();
+
+                var url = "http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/"+data.credentials.userId
+                fetch(url, {method: "GET"})
+                .then((response) => response.json())
+                .then((responseData) => {
+                    // this.setState({"cards": [{name: responseData.title, image: responseData.link}]});
+                  // Alert.alert(JSON.stringify(responseData))
+                  console.log("find user info", responseData)
+                  AsyncStorage.setItem("userinfo", JSON.stringify(responseData))
+                }).done();
+                AsyncStorage.setItem("loggedin", 'true')
+                console.log("after finding/creating user")
+            }).done();
+
+
+          console.log("Existing login found.");
+          console.log(data.credentials.token);
+
+          this.props.navigator.push({
+            name: 'Main',
+          });
+
+
+          console.log("!!!!!!!!!!! Logged in!", data);
           _this.setState({ user : data.credentials });
         }}
           // onLogout={() => {
           //   _this.setState({ user : null });
+          //   AsyncStorage.setItem("loggedin", 'false')
+          //   AsyncStorage.setItem("user", '')
           // }}
 
         onLoginFound={(data) => {
-          this.props.navigator.push({
-            name: 'Main',
-          });
+          _this.setState({ user : data.credentials.userId });
+          console.log("login found")
+
+          AsyncStorage.setItem("fbID", data.credentials.userId)
+          _this.setState({fbID: data.credentials.userId})
 
           var api = `https://graph.facebook.com/v2.7/${data.credentials.userId}/picture?width=${FB_PHOTO_WIDTH}&redirect=false&access_token=${data.credentials.token}`;
 
@@ -82,33 +169,67 @@ var Launch = React.createClass({
             .then((responseData) => {
               AsyncStorage.setItem("picture", responseData.data.url)
             })
-            .done();
-
-          var api = `https://graph.facebook.com/v2.7/${data.credentials.userId}?fields=id,name,age_range,gender&access_token=${data.credentials.token}`;
-
-          fetch(api)
-            .then((response) => response.json())
-            .then((responseData) => {
-              AsyncStorage.getItem("picture").then((value) => {
-                let obj = {}
-                obj["photo"] = value;
-                obj["id"] = responseData.id;
-                obj["name"] = responseData.name;
-                obj["age"] = responseData.age_range.min;
-                obj["gender"] = responseData.gender;
-
-                AsyncStorage.setItem("user", JSON.stringify(obj))
-              }).done();
-            })
           .done();
+
+          // var api = `https://graph.facebook.com/v2.7/${data.credentials.userId}?fields=id,name,age_range,gender&access_token=${data.credentials.token}`;
+          //
+          // fetch(api)
+          //   .then((response) => response.json())
+          //   .then((responseData) => {
+              // AsyncStorage.getItem("picture").then((value) => {
+
+                AsyncStorage.setItem("signin", 'true')
+
+              //   fetch("http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/", {
+              //     method: "POST",
+              //     headers: {
+              //     'Accept': 'application/json',
+              //     'Content-Type': 'application/json'
+              //     },
+              //     body: JSON.stringify({
+              //       birthday: null,
+              //       description: null,
+              //       photo: value,
+              //       gender: [responseData.gender],
+              //       preferredAgeMax: null,
+              //       long: null,
+              //       name: responseData.name,
+              //       fbID: responseData.id,
+              //       preferredAgeMin: null,
+              //       lat: null,
+              //       age: responseData.age_range.min
+              //     })
+              //   }).done()
+              // }).done();
+
+                var url = "http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/"+data.credentials.userId
+                fetch(url, {method: "GET"})
+                .then((response) => response.json())
+                .then((responseData) => {
+                    // this.setState({"cards": [{name: responseData.title, image: responseData.link}]});
+                  // Alert.alert(JSON.stringify(responseData))
+                  console.log("find user info", responseData)
+                  AsyncStorage.setItem("userinfo", JSON.stringify(responseData))
+                }).done();
+                AsyncStorage.setItem("loggedin", 'true')
+                console.log("after finding/creating user")
+            // }).done();
+
 
           console.log("Existing login found.");
           console.log(data.credentials.token);
-          _this.setState({ user : data.credentials.userId });
+
+          this.props.navigator.push({
+            name: 'Main',
+          });
+
+
+
 
         }}
         onLoginNotFound={()=>{
           console.log("No user logged in.");
+          // AsyncStorage.setItem("loggedin", 'false')
           _this.setState({ user : null });
         }}
         onError={(data)=>{
@@ -117,6 +238,7 @@ var Launch = React.createClass({
         }}
         onCancel={()=>{
           console.log("User cancelled.");
+          // AsyncStorage.setItem("signin", false)
         }}
         onPermissionsMissing={(data)=>{
           console.log("Check permissions!");

@@ -1,6 +1,6 @@
 
 'use strict';
-
+// @providesModule HomePage
 import React from 'react';
 import {
   StyleSheet,
@@ -72,60 +72,85 @@ export default React.createClass({
         cards: {},
         imgurID: '',
         outOfCards: false,
-        fbID: ''};
+        fbID: '',
+        name: ''};
     },
 
     componentWillMount() {
-      AsyncStorage.getItem("user").then((value) => {
-        let user_info = JSON.parse(value)
-        // Alert.alert(JSON.parse(value).id)
 
-        fetch("http://192.168.43.88:3000/api/user/", {
-          method: "POST",
-          headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            birthday: null,
-            dateJoined: null,
-            description: null,
-            photo: user_info.photo,
-            gender: user_info.gender,
-            preferredAgeMax: null,
-            preferredLocationMI: null,
-            long: null,
-            dateLastLogin: null,
-            name: user_info.name,
-            fbID: user_info.id,
-            preferredAgeMin: null,
-            lat: null,
-            age: user_info.age
-          })
-        }).done();
-        this.setState({"fbID": user_info.id})
-      }).done();
+        // Alert.alert("loggedin")
+      //  this.setTimeout(() => {}
+
+      // this.setTimeout( () => {
+      //   () => {
+      //    AsyncStorage.getItem("userinfo").then((value) => {
+      //      // console.log("USERINFO VALUE EXIST???", value)
+      //      let n = JSON.parse(value)
+      //      if (this.isMounted()) {
+      //        console.log("get fb value ughhhhhh", value)
+      //        this.setState({name: n.name})
+      //      }
+      //    }).done();
+      //   }
+      // },300);
+
+      //
+      // AsyncStorage.getItem("userinfo").then((value) => {
+      //   // console.log("USERINFO VALUE EXIST???", value)
+      //   let n = JSON.parse(value)
+      //   if (this.isMounted()) {
+      //     console.log("get fb value ughhhhhh", value)
+      //     this.setState({name: n.name})
+      //   }
+      // }).done();
+
+
+
+
+
+      // {}, 350)
 
        this.setTimeout(() => {
         this.getPictureData() },400
       );
+       this.setTimeout(() => {
+        this.userInfo() },300
+      );
 
     },
 
+    userInfo() {
+       AsyncStorage.getItem("userinfo").then((value) => {
+        console.log("USERINFO VALUE EXIST???", value)
+        let n = JSON.parse(value)
+        if (this.isMounted()) {
+          console.log("get fb value ughhhhhh", value)
+          this.setState({name: n.name, fbID: n.fbID})
+        }
+      }).done();
+    },
+
+    // async userfbID()
+
     getPictureData() {
-      // let x = this.state.fbID
-      var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/unseen"
+      console.log("get picture data")
+      // var url = "http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/10154528031610798/unseen"
+      var url = "http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/"+this.state.fbID+"/unseen"
       fetch(url, {method: "GET"})
       .then((response) => response.json())
       .then((responseData) => {
+        console.log("get unseen pics?", responseData)
+        if (this.isMounted()) {
           this.setState({"cards": [{name: responseData.title, image: responseData.link}]});
           this.setState({"imgurID": responseData.imgurID})
+        }
       })
       .done();
     },
 
     likePicture() {
-      fetch("http://192.168.43.88:3000/api/picture/newpictures", {
+      console.log("like picture")
+      fetch("http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/picture/newpictures", {
         method: "POST",
         headers: {
         'Accept': 'application/json',
@@ -134,14 +159,14 @@ export default React.createClass({
         body: JSON.stringify({
           fbID: this.state.fbID,
           imgurID: this.state.imgurID,
-          relationship: "LIKES",
+          relationship: "LIKES"
         })
       })
       .done();
     },
 
     dislikePicture() {
-      fetch("http://192.168.43.88:3000/api/picture/newpictures", {
+      fetch("http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/picture/newpictures", {
         method: "POST",
         headers: {
         'Accept': 'application/json',
@@ -157,8 +182,9 @@ export default React.createClass({
     },
 
     newMatches() {
+      console.log("new matches")
       // let x = this.state.fbID
-      var url = "http://192.168.43.88:3000/api/user/"+this.state.fbID.toString()+"/newmatches"
+      var url = "http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/"+this.state.fbID.toString()+"/newmatches"
       fetch(url, {method: "GET"})
       .then((response) => response.json())
       .then((responseData) => {
@@ -170,13 +196,12 @@ export default React.createClass({
 
     handleYup (card) {
       this.likePicture()
-      this.getPictureData()
     },
     handleNope (card) {
       this.dislikePicture()
-      this.getPictureData()
     },
     cardRemoved (index) {
+      this.getPictureData()
       this.newMatches()
   },
 
@@ -213,21 +238,19 @@ export default React.createClass({
 
       <ScrollView tabLabel="account-box">
         <View style={styles.container}>
+        <Text style={{fontSize: 17, fontWeight:'500', paddingTop: 10, paddingBottom: 20}}>{this.state.name}</Text>
         <DisplayUserPage />
           <TouchableHighlight style={styles.btnClickContain} underlayColor='transparent' onPress={ () => this.props.navigator.push({  name: 'Profile'})}>
           <View style={styles.button}>
           <Icon
             name='md-settings'
-            size={20}
+            size={19}
             style={styles.btnIcon}/>
           <Text style={styles.btnText}>Settings</Text>
           </View>
           </TouchableHighlight>
           </View>
       </ScrollView>
-
-
-
 
     </ScrollableTabView>;
   }
@@ -244,16 +267,22 @@ const styles = StyleSheet.create({
   },
   btnIcon: {
     // flex: 1,
-    color: 'rgb(50, 50, 50)',
-    paddingTop: 20,
-    paddingRight: 5
+    height: 17,
+    width: 17,
+    // color: 'rgb(50, 50, 50)',
+    // paddingTop: 20,
+    // paddingRight: 5
   },
   btnText: {
+    fontSize: 14,
+    paddingBottom: 1,
+    paddingRight: 5,
+    // color: 'rgb(255, 17, 131)',
   },
   innercontainer: {
     // marginTop: 70,
     flex: 1,
-    height: windowSize.height,
+    height: windowSize.height-100,
     alignItems: 'center',
     backgroundColor: 'rgba(200, 200, 200, 0.43)',
     // alignItems: 'center',
@@ -262,9 +291,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 80,
-    paddingBottom: 120,
+    paddingBottom: 50,
     // fontSize: 22,
-    // height: windowSize.height-100,
+    // height: windowSize.height,
     alignItems: 'center',
     // textAlign: 'center',
     backgroundColor: 'rgba(200, 200, 200, 0.43)',
@@ -285,8 +314,6 @@ const styles = StyleSheet.create({
     flex:1,
     marginTop: 10,
     bottom: 0,
-    // width: windowSize.width-20,
-    // height: windowSize.height-150
   },
   card: {
     marginTop: 80,
@@ -302,14 +329,14 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     elevation: 1,
     width: windowSize.width-20,
-    height: windowSize.height-115
+    height: windowSize.height-115,
   },
   thumbnail: {
     flex: 2,
     flexDirection: 'row',
+    paddingBottom: 5,
     marginBottom: 10,
     width: windowSize.width-40,
-    height: windowSize.height-190,
     resizeMode:'contain'
   },
   text: {
@@ -320,7 +347,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingLeft: 10,
     paddingRight: 10,
-    paddingBottom: 10,
+    paddingBottom: 5,
     // textAlign: 'center',
   },
   noMoreCards: {
@@ -330,9 +357,12 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    // flexDirection: 'row',
+    // width: 60,
+    paddingTop: 5,
+    paddingBottom: 10,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    // alignSelf: 'stretch',
+    alignSelf: 'stretch',
   }
 });
