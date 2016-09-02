@@ -109,12 +109,14 @@ export default React.createClass({
 
 
       // {}, 350)
+      // var url = "http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/"+this.state.fbID+"/unseen"
+      // if (url.length > 70) {
 
        this.setTimeout(() => {
-        this.getPictureData() },300
+        this.getPictureData() },400
       );
        this.setTimeout(() => {
-        this.userInfo() },200
+        this.userInfo() },300
       );
 
     },
@@ -138,6 +140,7 @@ export default React.createClass({
       console.log("get picture data")
       // var url = "http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/10154528031610798/unseen"
       var url = "http://humorusneo-dev.us-west-2.elasticbeanstalk.com/api/user/"+this.state.fbID+"/unseen"
+      if (url.length > 70) {
       fetch(url, {method: "GET"})
       .then((response) => response.json())
       .then((responseData) => {
@@ -148,6 +151,7 @@ export default React.createClass({
         }
       })
       .done();
+      }
     },
 
     likePicture() {
@@ -198,12 +202,13 @@ export default React.createClass({
 
     handleYup (card) {
       this.likePicture()
+      this.getPictureData()
     },
     handleNope (card) {
       this.dislikePicture()
+      this.getPictureData()
     },
     cardRemoved (index) {
-      this.getPictureData()
       this.newMatches()
   },
 
