@@ -1,5 +1,7 @@
 # HumorUs - Mobile App created using React Native for Android (currently)
 
+![alt tag](https://scontent-lax3-1.xx.fbcdn.net/v/t31.0-8/15440557_10208674848576899_7572967030006946047_o.jpg?oh=fb02e74bea4de99c0bbe6fd5ae1681cf&oe=58F5EDEF)
+
 ## Tinder like dating app that lets users swipe on photos (retrieved from database)
 - Facebook OAuth through react-native-facebook-login package
 - Uses React Native navigation
